@@ -82,7 +82,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | INT-001 | Web ↔ API Integration | I-001,I-003 | IN_PROGRESS | Frontend connects |
 | INT-002 | Telegram ↔ API Integration | I-001,I-002 | IN_PROGRESS | Bot calls API |
 | INT-003 | Contract Integration | S-004,F-005,F-006 | TODO | Adapters + contracts |
-| INT-004 | Price Oracle Integration | F-004 | DONE | PriceOracle.sol + interfaces + tests |
+| INT-004 | Price Oracle Integration | F-004 | DONE | Contracts + TS service (Chainlink/Pyth/DexScreener) |
 
 ---
 
