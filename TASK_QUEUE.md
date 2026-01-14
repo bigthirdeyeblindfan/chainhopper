@@ -26,7 +26,8 @@ If a checkout is >2 hours old with no commits, you may take it over.
 
 | Task ID | Agent | Checkout Time | Expires |
 |---------|-------|---------------|---------|
-| P-001 | agent-testing | 2025-01-14 | 2hrs |
+| CHAIN-001 | agent-sonic | 2025-01-14 | 2hrs |
+| CHAIN-003 | agent-sui | 2025-01-14 | 2hrs |
 
 ---
 
@@ -89,11 +90,22 @@ If a checkout is >2 hours old with no commits, you may take it over.
 
 | ID | Task | Dependencies | Status | Notes |
 |----|------|--------------|--------|-------|
-| P-001 | Testing Suite | INT-* | IN_PROGRESS | Unit + e2e tests |
+| P-001 | Testing Suite | INT-* | DONE | 191 tests: EVM, TON adapters, aggregators, auth, oracle, contracts, API routes |
 | P-002 | Security Audit Prep | S-* | DONE | Slither/Mythril configs + audit scripts + CI workflow |
-| P-003 | Documentation | All | TODO | API docs, guides |
+| P-003 | Documentation | All | DONE | SDK docs, WebSocket guide, CONTRIBUTING.md, CHANGELOG.md |
 | P-004 | Grant Applications | P-003 | TODO | Human task |
 | P-005 | Beta Launch | All | TODO | Production deploy |
+
+---
+
+## Phase 6: Chain Expansion
+
+| ID | Task | Dependencies | Status | Notes |
+|----|------|--------------|--------|-------|
+| CHAIN-001 | Sonic Chain Integration | F-006 | IN_PROGRESS | Sonic DEXs, RPC config, contract deploy |
+| CHAIN-002 | Berachain Integration | F-006 | TODO | Berachain DEXs, contracts |
+| CHAIN-003 | Sui Full Integration | F-004 | IN_PROGRESS | Cetus, Turbos DEX adapters |
+| CHAIN-004 | Eclipse/SVM Integration | F-004 | TODO | Jupiter integration |
 
 ---
 
