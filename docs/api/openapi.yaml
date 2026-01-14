@@ -1,0 +1,1200 @@
+openapi: 3.0.3
+info:
+  title: ChainHopper API
+  version: 0.1.0
+  description: |
+    # ChainHopper Trading API
+
+    Multi-chain trading bot API with a unique profit-share fee model.
+
+    ## Key Features
+    - **15+ Chain Support**: Trade across TON, EVM chains (Ethereum, Base, Arbitrum, etc.), Sui, and more
+    - **Profit-Share Fees**: Only pay when you profit - 15% for free tier, 10% for holders, 5% for stakers
+    - **Real-time Data**: WebSocket streams for prices and trade updates
+    - **Cross-Chain Portfolio**: Unified P&L tracking across all chains
+
+    ## Authentication
+
+    The API supports two authentication methods:
+
+    ### JWT Tokens (recommended for web/mobile apps)
+    1. Authenticate via `/auth/telegram` to get tokens
+    2. Include the access token in requests: `Authorization: Bearer <access_token>`
+    3. Refresh tokens before expiry using `/auth/refresh`
+
+    ### API Keys (recommended for bots/scripts)
+    1. Create an API key at `/auth/api-keys`
+    2. Include in requests: `Authorization: ApiKey <api_key>`
+    3. API keys can have limited permissions (read, trade, withdraw)
+
+    ## Rate Limits
+
+    | Tier | Requests/Minute | WebSocket Connections |
+    |------|-----------------|----------------------|
+    | Free | 60 | 2 |
+    | Holder | 300 | 10 |
+    | Staker | 1000 | 50 |
+    | Enterprise | Custom | Custom |
+
+    Rate limit headers are included in all responses:
+    - `X-RateLimit-Limit`: Your rate limit
+    - `X-RateLimit-Remaining`: Requests remaining
+    - `X-RateLimit-Reset`: Unix timestamp when limit resets
+
+    ## Error Handling
+
+    All errors follow a consistent format:
+    ```json
+    {
+      "error": "Human readable message",
+      "code": "MACHINE_READABLE_CODE"
+    }
+    ```
+
+    Common error codes:
+    - `AUTH_REQUIRED` - No authentication provided
+    - `INVALID_TOKEN` - Token is invalid or expired
+    - `RATE_LIMITED` - Too many requests
+    - `INVALID_PARAMS` - Request validation failed
+    - `NOT_FOUND` - Resource not found
+    - `CHAIN_UNAVAILABLE` - Chain is temporarily unavailable
+
+  contact:
+    name: ChainHopper Support
+    url: https://chainhopper.io
+    email: support@chainhopper.io
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000
+    description: Local development
+  - url: https://api.chainhopper.io
+    description: Production
+
+tags:
+  - name: System
+    description: Health checks and system status
+  - name: Authentication
+    description: Login, tokens, and API key management
+  - name: Trading
+    description: Quotes, swaps, and token information
+  - name: Portfolio
+    description: Balances, positions, and P&L tracking
+  - name: Account
+    description: User profile, wallets, and settings
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT access token from /auth/telegram or /auth/refresh
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'API key with prefix: "ApiKey chpr_xxx"'
+
+  schemas:
+    Error:
+      type: object
+      required: [error, code]
+      properties:
+        error:
+          type: string
+          description: Human-readable error message
+        code:
+          type: string
+          description: Machine-readable error code
+
+    ChainId:
+      type: string
+      enum:
+        - ton
+        - ethereum
+        - base
+        - arbitrum
+        - optimism
+        - polygon
+        - bsc
+        - avalanche
+        - sonic
+        - kaia
+        - berachain
+        - sui
+        - eclipse
+        - hyperliquid
+        - cosmos
+      example: base
+
+    Token:
+      type: object
+      required: [address, chainId, symbol, name, decimals]
+      properties:
+        address:
+          type: string
+          example: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+        chainId:
+          $ref: '#/components/schemas/ChainId'
+        symbol:
+          type: string
+          example: USDC
+        name:
+          type: string
+          example: USD Coin
+        decimals:
+          type: integer
+          example: 6
+        logoUri:
+          type: string
+          format: uri
+        isNative:
+          type: boolean
+        isVerified:
+          type: boolean
+
+    FeeBreakdown:
+      type: object
+      required: [totalFeeUsd, protocolFee, protocolFeeUsd, networkFee, networkFeeUsd]
+      properties:
+        totalFeeUsd:
+          type: number
+          example: 2.50
+        protocolFee:
+          type: string
+          description: Protocol fee in token units (0 until profitable trade)
+          example: "0"
+        protocolFeeUsd:
+          type: number
+          example: 0
+        networkFee:
+          type: string
+          description: Gas fee in native token units
+          example: "1000000000000000"
+        networkFeeUsd:
+          type: number
+          example: 2.50
+        dexFee:
+          type: string
+        dexFeeUsd:
+          type: number
+
+    SwapRoute:
+      type: object
+      required: [dex, poolAddress, tokenIn, tokenOut, percentage]
+      properties:
+        dex:
+          type: string
+          example: uniswap_v3
+        poolAddress:
+          type: string
+        tokenIn:
+          type: string
+        tokenOut:
+          type: string
+        percentage:
+          type: number
+          description: Percentage of amount through this route
+          example: 100
+
+    Quote:
+      type: object
+      required: [id, chainId, tokenIn, tokenOut, amountIn, amountOut, amountOutMin, priceImpact, route, estimatedGas, gasPrice, fee, expiresAt, dexAggregator]
+      properties:
+        id:
+          type: string
+          example: quote_abc123
+        chainId:
+          $ref: '#/components/schemas/ChainId'
+        tokenIn:
+          $ref: '#/components/schemas/Token'
+        tokenOut:
+          $ref: '#/components/schemas/Token'
+        amountIn:
+          type: string
+          description: Amount in smallest unit
+          example: "1000000000000000000"
+        amountOut:
+          type: string
+          description: Expected output amount
+          example: "3250000000"
+        amountOutMin:
+          type: string
+          description: Minimum output after slippage
+          example: "3217500000"
+        priceImpact:
+          type: number
+          description: Price impact percentage
+          example: 0.15
+        route:
+          type: array
+          items:
+            $ref: '#/components/schemas/SwapRoute'
+        estimatedGas:
+          type: string
+          example: "150000"
+        gasPrice:
+          type: string
+          example: "30000000000"
+        fee:
+          $ref: '#/components/schemas/FeeBreakdown'
+        expiresAt:
+          type: string
+          format: date-time
+        dexAggregator:
+          type: string
+          enum: [jupiter, 1inch, paraswap, 0x, stonfi, dedust, cetus, turbos]
+
+    SwapStatus:
+      type: string
+      enum: [pending, submitted, confirming, confirmed, failed, expired]
+
+    Swap:
+      type: object
+      required: [id, quoteId, status, chainId, tokenIn, tokenOut, amountIn, fee, createdAt]
+      properties:
+        id:
+          type: string
+        quoteId:
+          type: string
+        status:
+          $ref: '#/components/schemas/SwapStatus'
+        txHash:
+          type: string
+        chainId:
+          $ref: '#/components/schemas/ChainId'
+        tokenIn:
+          $ref: '#/components/schemas/Token'
+        tokenOut:
+          $ref: '#/components/schemas/Token'
+        amountIn:
+          type: string
+        amountOut:
+          type: string
+          description: Actual output (after confirmation)
+        fee:
+          $ref: '#/components/schemas/FeeBreakdown'
+        profit:
+          type: string
+          description: Realized profit (for sells)
+        createdAt:
+          type: string
+          format: date-time
+        executedAt:
+          type: string
+          format: date-time
+        confirmedAt:
+          type: string
+          format: date-time
+
+    TokenBalance:
+      type: object
+      required: [token, balance, balanceFormatted]
+      properties:
+        token:
+          $ref: '#/components/schemas/Token'
+        balance:
+          type: string
+          description: Balance in smallest unit
+        balanceFormatted:
+          type: string
+          example: "1,234.56"
+        valueUsd:
+          type: number
+          example: 1234.56
+        priceUsd:
+          type: number
+        priceChange24h:
+          type: number
+
+    Position:
+      type: object
+      required: [id, chainId, token, amount, entryPrice, currentPrice, costBasis, currentValue, unrealizedPnl, unrealizedPnlPercent, isOpen, openedAt]
+      properties:
+        id:
+          type: string
+        chainId:
+          $ref: '#/components/schemas/ChainId'
+        token:
+          $ref: '#/components/schemas/Token'
+        amount:
+          type: string
+        amountFormatted:
+          type: string
+        entryPrice:
+          type: number
+          description: Entry price in USD
+        currentPrice:
+          type: number
+        costBasis:
+          type: number
+          description: Total cost in USD
+        currentValue:
+          type: number
+        unrealizedPnl:
+          type: number
+        unrealizedPnlPercent:
+          type: number
+          example: 15.5
+        realizedPnl:
+          type: number
+        isOpen:
+          type: boolean
+        openedAt:
+          type: string
+          format: date-time
+        closedAt:
+          type: string
+          format: date-time
+
+    User:
+      type: object
+      required: [id, tier, referralCode, settings, createdAt]
+      properties:
+        id:
+          type: string
+        telegramId:
+          type: string
+        telegramUsername:
+          type: string
+        email:
+          type: string
+          format: email
+        tier:
+          type: string
+          enum: [FREE, HOLDER, STAKER, ENTERPRISE]
+        referralCode:
+          type: string
+          example: CHABCDEF
+        settings:
+          $ref: '#/components/schemas/UserSettings'
+        createdAt:
+          type: string
+          format: date-time
+
+    UserSettings:
+      type: object
+      properties:
+        defaultSlippage:
+          type: number
+          minimum: 0.1
+          maximum: 50
+          example: 0.5
+        defaultChain:
+          $ref: '#/components/schemas/ChainId'
+        notifications:
+          type: object
+          properties:
+            tradeConfirmations:
+              type: boolean
+            priceAlerts:
+              type: boolean
+            portfolioUpdates:
+              type: boolean
+            newListings:
+              type: boolean
+        autoApprove:
+          type: boolean
+        maxTradeSize:
+          type: number
+          description: Max trade size in USD
+
+    ApiKey:
+      type: object
+      required: [id, name, keyPrefix, permissions, rateLimit, createdAt]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          example: Trading Bot Key
+        key:
+          type: string
+          description: Full key (only returned on creation)
+          example: chpr_abc123...
+        keyPrefix:
+          type: string
+          example: chpr_abc1
+        permissions:
+          type: array
+          items:
+            type: string
+            enum: [read, trade, withdraw]
+        rateLimit:
+          type: integer
+          description: Requests per minute
+          example: 60
+        lastUsed:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+paths:
+  # ==================== System ====================
+  /health:
+    get:
+      tags: [System]
+      summary: Health check
+      description: Returns API health status and chain connectivity
+      responses:
+        '200':
+          description: Health status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [healthy, degraded, unhealthy]
+                  version:
+                    type: string
+                    example: "0.1.0"
+                  uptime:
+                    type: integer
+                    description: Uptime in seconds
+                  chains:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        chainId:
+                          type: string
+                        status:
+                          type: string
+                          enum: [up, down]
+                        latency:
+                          type: integer
+                          description: Latency in ms
+
+  /ready:
+    get:
+      tags: [System]
+      summary: Readiness check
+      description: Returns 200 if service is ready for traffic
+      responses:
+        '200':
+          description: Service ready
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ready:
+                    type: boolean
+        '503':
+          description: Service not ready
+
+  /live:
+    get:
+      tags: [System]
+      summary: Liveness check
+      description: Returns 200 if service is alive
+      responses:
+        '200':
+          description: Service alive
+
+  # ==================== Authentication ====================
+  /auth/telegram:
+    post:
+      tags: [Authentication]
+      summary: Authenticate via Telegram
+      description: Login using Telegram Widget data. Creates account if new user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id, first_name, auth_date, hash]
+              properties:
+                id:
+                  type: integer
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                username:
+                  type: string
+                photo_url:
+                  type: string
+                auth_date:
+                  type: integer
+                hash:
+                  type: string
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
+                  expiresIn:
+                    type: integer
+                  tokenType:
+                    type: string
+                  isNewUser:
+                    type: boolean
+        '401':
+          description: Authentication failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/refresh:
+    post:
+      tags: [Authentication]
+      summary: Refresh access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: Token refreshed
+        '401':
+          description: Invalid refresh token
+
+  /auth/api-keys:
+    get:
+      tags: [Authentication]
+      summary: List API keys
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of API keys
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  apiKeys:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ApiKey'
+    post:
+      tags: [Authentication]
+      summary: Create API key
+      description: Create new API key. Full key only returned once.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, permissions]
+              properties:
+                name:
+                  type: string
+                  maxLength: 50
+                permissions:
+                  type: array
+                  items:
+                    type: string
+                    enum: [read, trade, withdraw]
+                expiresAt:
+                  type: string
+                  format: date-time
+      responses:
+        '201':
+          description: API key created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKey'
+
+  /auth/api-keys/{keyId}:
+    delete:
+      tags: [Authentication]
+      summary: Delete API key
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: keyId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: API key deleted
+
+  /auth/verify:
+    get:
+      tags: [Authentication]
+      summary: Verify token
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      responses:
+        '200':
+          description: Token valid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid:
+                    type: boolean
+                  userId:
+                    type: string
+                  type:
+                    type: string
+                    enum: [jwt, apiKey]
+
+  # ==================== Trading ====================
+  /quote:
+    get:
+      tags: [Trading]
+      summary: Get swap quote
+      description: Get a quote for swapping tokens. No auth required.
+      parameters:
+        - name: chainId
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/ChainId'
+        - name: tokenIn
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Input token address
+        - name: tokenOut
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Output token address
+        - name: amountIn
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Amount in smallest unit
+        - name: slippage
+          in: query
+          schema:
+            type: string
+          description: Slippage tolerance (percentage)
+      responses:
+        '200':
+          description: Quote retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
+        '400':
+          description: Invalid parameters
+        '503':
+          description: Chain unavailable
+
+  /swap/build:
+    post:
+      tags: [Trading]
+      summary: Build swap transaction
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [quoteId, recipient]
+              properties:
+                quoteId:
+                  type: string
+                recipient:
+                  type: string
+                deadline:
+                  type: integer
+      responses:
+        '200':
+          description: Transaction built
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  quoteId:
+                    type: string
+                  chainId:
+                    $ref: '#/components/schemas/ChainId'
+                  to:
+                    type: string
+                  data:
+                    type: string
+                  value:
+                    type: string
+                  gasLimit:
+                    type: string
+                  expiresAt:
+                    type: string
+
+  /swap/submit:
+    post:
+      tags: [Trading]
+      summary: Submit swap transaction
+      description: Record submitted tx for tracking
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [quoteId, txHash]
+              properties:
+                quoteId:
+                  type: string
+                txHash:
+                  type: string
+      responses:
+        '200':
+          description: Swap recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Swap'
+
+  /swap/{swapId}:
+    get:
+      tags: [Trading]
+      summary: Get swap status
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      parameters:
+        - name: swapId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Swap details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Swap'
+
+  /swaps:
+    get:
+      tags: [Trading]
+      summary: List user swaps
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      parameters:
+        - name: chainId
+          in: query
+          schema:
+            $ref: '#/components/schemas/ChainId'
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/SwapStatus'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: List of swaps
+
+  /tokens:
+    get:
+      tags: [Trading]
+      summary: Search tokens
+      parameters:
+        - name: chainId
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/ChainId'
+        - name: query
+          in: query
+          schema:
+            type: string
+        - name: verified
+          in: query
+          schema:
+            type: boolean
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of tokens
+
+  /tokens/{chainId}/{address}:
+    get:
+      tags: [Trading]
+      summary: Get token details
+      parameters:
+        - name: chainId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ChainId'
+        - name: address
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Token details
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Token'
+                  - type: object
+                    properties:
+                      priceUsd:
+                        type: number
+                      priceChange24h:
+                        type: number
+                      volume24h:
+                        type: number
+                      marketCap:
+                        type: number
+                      holders:
+                        type: integer
+                      isRugPull:
+                        type: boolean
+                      rugScore:
+                        type: integer
+                        minimum: 0
+                        maximum: 100
+
+  # ==================== Portfolio ====================
+  /portfolio/balances:
+    get:
+      tags: [Portfolio]
+      summary: Get token balances
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      parameters:
+        - name: chainId
+          in: query
+          schema:
+            $ref: '#/components/schemas/ChainId'
+        - name: includeZero
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Token balances
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  balances:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TokenBalance'
+                  totalValueUsd:
+                    type: number
+
+  /portfolio/positions:
+    get:
+      tags: [Portfolio]
+      summary: Get positions
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      parameters:
+        - name: chainId
+          in: query
+          schema:
+            $ref: '#/components/schemas/ChainId'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [open, closed, all]
+      responses:
+        '200':
+          description: Trading positions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  positions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Position'
+                  total:
+                    type: integer
+
+  /portfolio/summary:
+    get:
+      tags: [Portfolio]
+      summary: Get portfolio summary
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      responses:
+        '200':
+          description: Portfolio summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalValueUsd:
+                    type: number
+                  totalCostBasisUsd:
+                    type: number
+                  totalUnrealizedPnlUsd:
+                    type: number
+                  totalUnrealizedPnlPercent:
+                    type: number
+                  totalRealizedPnlUsd:
+                    type: number
+                  totalFeePaidUsd:
+                    type: number
+                  byChain:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        chainId:
+                          $ref: '#/components/schemas/ChainId'
+                        valueUsd:
+                          type: number
+                        pnlUsd:
+                          type: number
+                        pnlPercent:
+                          type: number
+
+  /portfolio/stats:
+    get:
+      tags: [Portfolio]
+      summary: Get trading stats
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      responses:
+        '200':
+          description: Trading statistics
+
+  /portfolio/history:
+    get:
+      tags: [Portfolio]
+      summary: Get trade history
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Trade history
+
+  /portfolio/pnl-chart:
+    get:
+      tags: [Portfolio]
+      summary: Get P&L chart data
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [1d, 7d, 30d, 90d, 1y, all]
+      responses:
+        '200':
+          description: Chart data
+
+  # ==================== Account ====================
+  /user/me:
+    get:
+      tags: [Account]
+      summary: Get current user
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /user/settings:
+    patch:
+      tags: [Account]
+      summary: Update settings
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSettings'
+      responses:
+        '200':
+          description: Settings updated
+
+  /user/wallets:
+    get:
+      tags: [Account]
+      summary: List wallets
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      responses:
+        '200':
+          description: List of wallets
+    post:
+      tags: [Account]
+      summary: Add wallet
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [chainId, address]
+              properties:
+                chainId:
+                  $ref: '#/components/schemas/ChainId'
+                address:
+                  type: string
+                label:
+                  type: string
+      responses:
+        '201':
+          description: Wallet added
+
+  /user/wallets/{walletId}:
+    patch:
+      tags: [Account]
+      summary: Update wallet
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      parameters:
+        - name: walletId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Wallet updated
+    delete:
+      tags: [Account]
+      summary: Remove wallet
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      parameters:
+        - name: walletId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Wallet removed
+
+  /user/referrals:
+    get:
+      tags: [Account]
+      summary: Get referral stats
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      responses:
+        '200':
+          description: Referral statistics
+
+  /user/referral-link:
+    get:
+      tags: [Account]
+      summary: Get referral link
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      responses:
+        '200':
+          description: Referral links
+
+  /user/points:
+    get:
+      tags: [Account]
+      summary: Get points balance
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      responses:
+        '200':
+          description: Points balance
+
+  /user/tier:
+    get:
+      tags: [Account]
+      summary: Get tier info
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      responses:
+        '200':
+          description: Tier information

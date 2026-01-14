@@ -10,3 +10,6 @@ export * from './prisma/index.js';
 
 // Re-export authentication
 export * from './auth/index.js';
+
+// Re-export price oracle
+export * from './oracle/index.js';

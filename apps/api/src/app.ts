@@ -4,10 +4,19 @@ import { logger } from 'hono/logger';
 import { timing } from 'hono/timing';
 import { healthRoutes } from './routes/health.js';
 import { openApiRoutes } from './routes/openapi.js';
+import { authRoutes } from './routes/auth.js';
+import { tradingRoutes } from './routes/trading.js';
+import { portfolioRoutes } from './routes/portfolio.js';
+import { userRoutes } from './routes/user.js';
 
 export type AppEnv = {
   Variables: {
     requestId: string;
+    userId?: string;
+    userTier?: string;
+    authType?: 'jwt' | 'apiKey' | 'telegram';
+    apiKeyId?: string;
+    apiKeyPermissions?: string[];
   };
 };
 
@@ -20,8 +29,8 @@ app.use(
   '*',
   cors({
     origin: '*',
-    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
+    allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization', 'X-API-Key', 'X-Telegram-Init-Data'],
   })
 );
 
@@ -34,6 +43,10 @@ app.use('*', async (c, next) => {
 // Routes
 app.route('/', healthRoutes);
 app.route('/', openApiRoutes);
+app.route('/', authRoutes);
+app.route('/', tradingRoutes);
+app.route('/', portfolioRoutes);
+app.route('/', userRoutes);
 
 // Root endpoint
 app.get('/', (c) => {

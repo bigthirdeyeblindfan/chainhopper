@@ -1,5 +1,6 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi';
 import type { AppEnv } from '../app.js';
+import { getWebSocketStats } from '../ws/index.js';
 
 const startTime = Date.now();
 
@@ -128,4 +129,13 @@ export const healthRoutes = new OpenAPIHono<AppEnv>()
   })
   .openapi(livenessRoute, async (c) => {
     return c.json({ alive: true }, 200);
+  })
+  // WebSocket stats endpoint (not OpenAPI documented)
+  .get('/ws/stats', (c) => {
+    const stats = getWebSocketStats();
+    return c.json({
+      success: true,
+      data: stats,
+      timestamp: new Date().toISOString(),
+    });
   });

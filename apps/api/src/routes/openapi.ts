@@ -54,6 +54,10 @@ Most endpoints require an API key passed via the \`X-API-Key\` header.
       description: 'Health checks and system status',
     },
     {
+      name: 'Authentication',
+      description: 'Login, tokens, and API keys',
+    },
+    {
       name: 'Trading',
       description: 'Quote and swap endpoints',
     },
@@ -63,9 +67,25 @@ Most endpoints require an API key passed via the \`X-API-Key\` header.
     },
     {
       name: 'Account',
-      description: 'API keys and user settings',
+      description: 'User settings and wallets',
     },
   ],
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'JWT access token from /auth/telegram or /auth/refresh',
+      },
+      apiKeyAuth: {
+        type: 'apiKey',
+        in: 'header',
+        name: 'Authorization',
+        description: 'API key in format: "Bearer chpr_xxx" or "ApiKey chpr_xxx"',
+      },
+    },
+  },
 });
 
 // Swagger UI endpoint
