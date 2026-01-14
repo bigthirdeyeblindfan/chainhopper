@@ -26,8 +26,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 
 | Task ID | Agent | Checkout Time | Expires |
 |---------|-------|---------------|---------|
-| F-003 | agent-auth | 2025-01-14 | 2hrs |
-| F-005 | agent-ton | 2025-01-14 | 2hrs |
+| F-006 | agent-evm | 2025-01-14 | 2hrs |
 
 ---
 
@@ -44,10 +43,10 @@ If a checkout is >2 hours old with no commits, you may take it over.
 |----|------|--------------|--------|-------|
 | F-001 | Core Types & Interfaces | None | DONE | @chainhopper/types created |
 | F-002 | Database Schema (Prisma) | F-001 | DONE | packages/core/prisma |
-| F-003 | Authentication System | F-001 | IN_PROGRESS | JWT + API key auth |
+| F-003 | Authentication System | F-001 | DONE | packages/core/src/auth/ complete |
 | F-004 | Base Adapter Implementation | F-001 | DONE | Interfaces in types |
-| F-005 | TON Adapter | F-004 | IN_PROGRESS | packages/adapters/ton |
-| F-006 | EVM Adapter (Generic) | F-004 | TODO | packages/adapters/evm |
+| F-005 | TON Adapter | F-004 | DONE | STONfi + DeDust integration |
+| F-006 | EVM Adapter (Generic) | F-004 | IN_PROGRESS | packages/adapters/evm |
 
 ---
 
