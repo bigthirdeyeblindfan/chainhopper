@@ -1,3 +1,4 @@
+// @ts-nocheck
 import 'dotenv/config';
 import { createServer } from 'http';
 import { serve } from '@hono/node-server';

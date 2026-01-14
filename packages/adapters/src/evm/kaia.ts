@@ -66,7 +66,7 @@ export async function getDragonSwapQuote(
     const response = await fetch(`${DRAGONSWAP_API}/quote?${params}`);
 
     if (response.ok) {
-      const data = await response.json();
+      const data: any = await response.json();
       return {
         aggregator: 'dragonswap',
         amountOut: BigInt(data.amountOut || '0'),
@@ -172,7 +172,7 @@ export async function getKlaySwapQuote(
 
     if (!response.ok) return null;
 
-    const data = await response.json();
+    const data: any = await response.json();
 
     return {
       aggregator: 'klayswap',

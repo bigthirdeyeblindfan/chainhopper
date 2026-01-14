@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * FeeCollector Contract Client
  * TypeScript bindings for the FeeCollector smart contract

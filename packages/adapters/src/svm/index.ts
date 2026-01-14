@@ -578,7 +578,7 @@ export class EclipseAdapter implements SvmAdapter {
         return this.getSimulatedQuote(request);
       }
 
-      const data = await response.json();
+      const data: any = await response.json();
       return {
         outAmount: data.outAmount || '0',
         priceImpactPct: parseFloat(data.priceImpactPct || '0'),
@@ -658,7 +658,7 @@ export class EclipseAdapter implements SvmAdapter {
       //   headers: { 'Content-Type': 'application/json' },
       //   body: JSON.stringify(swapRequest),
       // });
-      // const data = await response.json();
+      // const data: any = await response.json();
       // return data.swapTransaction;
 
       // Return placeholder - actual implementation needs user public key

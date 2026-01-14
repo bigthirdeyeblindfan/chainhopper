@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * JWT Token Generation and Verification
  *

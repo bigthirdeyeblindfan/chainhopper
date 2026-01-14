@@ -91,7 +91,7 @@ export async function get1inchQuote(
 
       if (!quoteResponse.ok) return null;
 
-      const quoteData = await quoteResponse.json();
+      const quoteData: any = await quoteResponse.json();
       return {
         aggregator: '1inch',
         amountOut: BigInt(quoteData.dstAmount || quoteData.toAmount || '0'),
@@ -104,7 +104,7 @@ export async function get1inchQuote(
       };
     }
 
-    const data = await response.json();
+    const data: any = await response.json();
     return {
       aggregator: '1inch',
       amountOut: BigInt(data.dstAmount || data.toAmount || '0'),
@@ -151,7 +151,7 @@ export async function getParaSwapQuote(
 
     if (!priceResponse.ok) return null;
 
-    const priceData = await priceResponse.json();
+    const priceData: any = await priceResponse.json();
     const bestRoute = priceData.priceRoute;
 
     if (!bestRoute) return null;
@@ -186,7 +186,7 @@ export async function getParaSwapQuote(
       };
     }
 
-    const txData = await txResponse.json();
+    const txData: any = await txResponse.json();
     return {
       aggregator: 'paraswap',
       amountOut: BigInt(bestRoute.destAmount || '0'),
@@ -236,7 +236,7 @@ export async function getOogaBoogaQuote(
 
     if (!quoteResponse.ok) return null;
 
-    const quoteData = await quoteResponse.json();
+    const quoteData: any = await quoteResponse.json();
 
     // Build swap transaction
     const swapResponse = await fetch(`${AGGREGATOR_APIS.oogabooga}/swap`, {
@@ -257,7 +257,7 @@ export async function getOogaBoogaQuote(
     let txValue = 0n;
 
     if (swapResponse.ok) {
-      const swapData = await swapResponse.json();
+      const swapData: any = await swapResponse.json();
       txData = swapData.tx?.data || swapData.data || '0x';
       txTo = swapData.tx?.to || swapData.to || '';
       txValue = BigInt(swapData.tx?.value || swapData.value || '0');

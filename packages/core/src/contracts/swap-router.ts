@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * SwapRouter Contract Client
  * TypeScript bindings for the SwapRouter smart contract

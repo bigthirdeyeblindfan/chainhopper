@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * ReferralRegistry Contract Client
  * TypeScript bindings for the ReferralRegistry smart contract

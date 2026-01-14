@@ -1,136 +1,78 @@
+'use client'
+
+import { Card } from '@/components/ui'
+import { Header, PageContainer } from '@/components/layout'
+import { SwapCard, TradeHistory } from '@/components/features'
+
+const recentTrades = [
+  {
+    id: '1',
+    type: 'swap' as const,
+    status: 'completed' as const,
+    fromToken: 'ETH',
+    toToken: 'USDC',
+    fromAmount: '0.5',
+    toAmount: '950',
+    fromChain: 'Ethereum',
+    toChain: 'Ethereum',
+    timestamp: new Date(Date.now() - 1800000),
+    txHash: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+    profit: '15.00',
+    fee: '2.25',
+  },
+]
+
 export default function TradePage() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Swap Interface */}
-        <div className="lg:col-span-2">
-          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold">Swap</h2>
-              <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </button>
-            </div>
+    <>
+      <Header />
+      <PageContainer>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Swap Interface */}
+          <div className="lg:col-span-2">
+            <SwapCard />
+          </div>
 
-            {/* Chain Selector */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Chain
-              </label>
-              <select className="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 text-sm font-medium">
-                <option>Sonic</option>
-                <option>Kaia</option>
-                <option>Berachain</option>
-                <option>Sui</option>
-                <option>TON</option>
-                <option>Ethereum</option>
-                <option>Base</option>
-                <option>Arbitrum</option>
-              </select>
-            </div>
-
-            {/* From Token */}
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-2">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-gray-500 dark:text-gray-400">From</span>
-                <span className="text-sm text-gray-500 dark:text-gray-400">Balance: 0.00</span>
-              </div>
-              <div className="flex items-center gap-4">
-                <input
-                  type="text"
-                  placeholder="0.00"
-                  className="flex-1 bg-transparent text-2xl font-semibold outline-none"
-                />
-                <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-colors">
-                  <span className="font-medium">Select token</span>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          {/* Side Panel */}
+          <div className="space-y-6">
+            {/* Token Info */}
+            <Card>
+              <h3 className="text-lg font-semibold text-white mb-4">Token Info</h3>
+              <div className="text-center py-8">
+                <div className="w-12 h-12 mx-auto mb-3 bg-white/5 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                </button>
+                </div>
+                <p className="text-zinc-500 text-sm">Select a token to view details</p>
               </div>
-            </div>
+            </Card>
 
-            {/* Swap Arrow */}
-            <div className="flex justify-center -my-3 relative z-10">
-              <button className="p-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-gray-300 dark:hover:border-gray-600 transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                </svg>
-              </button>
-            </div>
+            {/* Recent Trades */}
+            <Card>
+              <h3 className="text-lg font-semibold text-white mb-4">Recent Trades</h3>
+              <TradeHistory trades={recentTrades} />
+            </Card>
 
-            {/* To Token */}
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mt-2 mb-6">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-gray-500 dark:text-gray-400">To</span>
-                <span className="text-sm text-gray-500 dark:text-gray-400">Balance: 0.00</span>
-              </div>
-              <div className="flex items-center gap-4">
-                <input
-                  type="text"
-                  placeholder="0.00"
-                  readOnly
-                  className="flex-1 bg-transparent text-2xl font-semibold outline-none"
-                />
-                <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-colors">
-                  <span className="font-medium">Select token</span>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            {/* Safety Check */}
+            <Card className="gradient-border">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                   </svg>
-                </button>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-white">Safety Check</h3>
+                  <p className="text-sm text-zinc-500 mt-1">
+                    Rug detection will analyze the token when selected
+                  </p>
+                </div>
               </div>
-            </div>
-
-            {/* Swap Button */}
-            <button className="w-full py-4 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-              Connect Wallet
-            </button>
-
-            {/* Trade Info */}
-            <div className="mt-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-              <div className="flex justify-between">
-                <span>Slippage</span>
-                <span>1.0%</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Fee</span>
-                <span className="text-green-500">Free (pay only on profit)</span>
-              </div>
-            </div>
+            </Card>
           </div>
         </div>
-
-        {/* Side Panel */}
-        <div className="space-y-6">
-          {/* Token Info */}
-          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6">
-            <h3 className="text-lg font-semibold mb-4">Token Info</h3>
-            <div className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm">
-              Select a token to view details
-            </div>
-          </div>
-
-          {/* Recent Trades */}
-          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6">
-            <h3 className="text-lg font-semibold mb-4">Recent Trades</h3>
-            <div className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm">
-              No recent trades
-            </div>
-          </div>
-
-          {/* Rug Detection */}
-          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6">
-            <h3 className="text-lg font-semibold mb-4">Safety Check</h3>
-            <div className="text-center py-4 text-gray-500 dark:text-gray-400 text-sm">
-              <p>Rug detection will analyze</p>
-              <p>the token when selected</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+      </PageContainer>
+    </>
   )
 }

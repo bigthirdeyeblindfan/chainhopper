@@ -1,0 +1,55 @@
+# Dependencies
+node_modules
+**/node_modules
+
+# Build outputs
+dist
+**/dist
+.next
+**/.next
+.turbo
+**/.turbo
+
+# Development
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Test
+coverage
+**/__tests__
+**/*.test.ts
+**/*.spec.ts
+
+# Documentation
+*.md
+!README.md
+docs
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# Contracts build artifacts (large)
+packages/contracts/out
+packages/contracts/cache
+packages/contracts/lib
+
+# Misc
+*.tgz
+*.tar.gz
+Makefile
+scripts/agent.py
+.agent

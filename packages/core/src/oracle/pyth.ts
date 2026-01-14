@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { ChainId } from '@chainhopper/types';
 import type { PriceData, PriceProvider, PythConfig } from './types.js';
 

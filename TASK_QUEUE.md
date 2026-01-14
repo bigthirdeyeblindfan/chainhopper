@@ -92,7 +92,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | P-002 | Security Audit Prep | S-* | DONE | Slither/Mythril configs + audit scripts + CI workflow |
 | P-003 | Documentation | All | DONE | SDK docs, WebSocket guide, CONTRIBUTING.md, CHANGELOG.md |
 | P-004 | Grant Applications | P-003 | TODO | Human task |
-| P-005 | Beta Launch | All | TODO | Production deploy |
+| P-005 | Beta Launch | All | DONE | Docker, nginx, CI/CD, deploy scripts |
 
 ---
 

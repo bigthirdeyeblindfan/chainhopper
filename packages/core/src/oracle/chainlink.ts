@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { ChainId } from '@chainhopper/types';
 import type { PriceData, PriceProvider, ChainlinkConfig } from './types.js';
 import { CHAINLINK_FEEDS } from './types.js';

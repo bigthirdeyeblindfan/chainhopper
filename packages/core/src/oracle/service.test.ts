@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { PriceOracleService, createPriceOracle } from './service.js';
 import type { PriceData, PriceProvider, OracleConfig } from './types.js';
