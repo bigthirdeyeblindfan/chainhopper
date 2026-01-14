@@ -28,3 +28,13 @@ export {
   createSuiDevnetConfig,
   COIN_TYPES as SUI_COIN_TYPES,
 } from './sui/index.js';
+
+// SVM/Eclipse adapter exports
+export {
+  EclipseAdapter,
+  createEclipseAdapter,
+  createEclipseConfig,
+  createEclipseTestnetConfig,
+  createEclipseDevnetConfig,
+  ECLIPSE_TOKENS,
+} from './svm/index.js';

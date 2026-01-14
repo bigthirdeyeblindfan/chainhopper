@@ -100,6 +100,29 @@ export interface SuiCoin {
 }
 
 /**
+ * SVM-specific adapter interface (Solana Virtual Machine - Eclipse, Solana)
+ */
+export interface SvmAdapter extends ChainAdapter {
+  getTokenAccounts(owner: string): Promise<SvmTokenAccount[]>;
+  getRecentBlockhash(): Promise<string>;
+  simulateTransaction(tx: string): Promise<SvmSimulationResult>;
+}
+
+export interface SvmTokenAccount {
+  mint: string;
+  owner: string;
+  amount: bigint;
+  decimals: number;
+}
+
+export interface SvmSimulationResult {
+  success: boolean;
+  logs: string[];
+  unitsConsumed: number;
+  error?: string;
+}
+
+/**
  * Adapter registry for managing multiple chain adapters
  */
 export interface AdapterRegistry {

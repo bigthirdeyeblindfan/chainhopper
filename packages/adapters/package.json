@@ -20,6 +20,8 @@
   "dependencies": {
     "@chainhopper/types": "*",
     "@mysten/sui": "^1.0.0",
+    "@solana/spl-token": "^0.4.0",
+    "@solana/web3.js": "^1.90.0",
     "@ton/ton": "^13.9.0",
     "viem": "^2.7.3"
   },
