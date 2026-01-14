@@ -1,66 +1,123 @@
-## Foundry
+# ChainHopper Smart Contracts
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+Solidity smart contracts for the ChainHopper multi-chain trading platform.
 
-Foundry consists of:
+## Contracts
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+| Contract | Description |
+|----------|-------------|
+| `FeeCollector.sol` | Profit-share fee collection with referral rewards |
+| `SwapRouter.sol` | Multi-DEX swap routing with fee integration |
+| `ReferralRegistry.sol` | On-chain referral code system |
+| `PriceOracle.sol` | Chainlink/Pyth price feed aggregator |
 
-## Documentation
+## Quick Start
 
-https://book.getfoundry.sh/
+```bash
+# Install dependencies
+forge install
 
-## Usage
+# Build
+forge build
+
+# Test
+forge test -vvv
+
+# Deploy (local)
+anvil &
+forge script script/DeployAll.s.sol:DeployAll --rpc-url http://localhost:8545 --broadcast
+```
+
+## Development
 
 ### Build
 
-```shell
-$ forge build
+```bash
+forge build
 ```
 
 ### Test
 
-```shell
-$ forge test
+```bash
+# Run all tests
+forge test
+
+# Run with verbosity
+forge test -vvv
+
+# Run specific test
+forge test --match-test testSwap
+
+# Run with gas report
+forge test --gas-report
+
+# Run coverage
+forge coverage
 ```
 
 ### Format
 
-```shell
-$ forge fmt
+```bash
+forge fmt
 ```
 
-### Gas Snapshots
+### Security Analysis
 
-```shell
-$ forge snapshot
+```bash
+# Slither static analysis
+make slither
+
+# Full security audit
+make audit
 ```
 
-### Anvil
+## Deployment
 
-```shell
-$ anvil
+### Testnet
+
+```bash
+# Configure .env
+cp .env.example .env
+# Edit .env with your values
+
+# Deploy to Sepolia
+make deploy-sepolia
 ```
 
-### Deploy
+### Mainnet
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+```bash
+# Dry run first
+make deploy-all-dry RPC_URL=$MAINNET_RPC_URL
+
+# Deploy
+make deploy-mainnet
+
+# Verify
+make verify-fee-collector
+make verify-swap-router
+make verify-referral-registry
 ```
 
-### Cast
+## Architecture
 
-```shell
-$ cast <subcommand>
+```
+┌─────────────────┐
+│   SwapRouter    │ ← Entry point for swaps
+└────────┬────────┘
+         │
+         ├─────────────────┬─────────────────┐
+         ▼                 ▼                 ▼
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+│  FeeCollector   │ │ ReferralRegistry│ │   PriceOracle   │
+│  (profit-share) │ │  (user codes)   │ │  (price feeds)  │
+└─────────────────┘ └─────────────────┘ └─────────────────┘
 ```
 
-### Help
+## Documentation
 
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+Full documentation: [docs/contracts/README.md](../../docs/contracts/README.md)
+
+## License
+
+MIT

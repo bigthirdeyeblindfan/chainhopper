@@ -31,7 +31,7 @@ export const WRAPPED_NATIVE_TOKENS: Record<EvmChainId, string> = {
   avalanche: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7', // WAVAX
   sonic: '0x039e2fB66102314Ce7b64Ce5Ce3E5183bc94aD38', // wS
   kaia: '0x19Aac5f612f524B754CA7e7c41cbFa2E981A4432', // WKLAY
-  berachain: '0x6969696969696969696969696969696969696969', // WBERA (placeholder)
+  berachain: '0x7507c1dc16935B82698e4C63f2746A2fCf994dF8', // WBERA
 };
 
 // Chain configurations
@@ -176,7 +176,9 @@ export const EVM_CHAIN_CONFIGS: Record<EvmChainId, ChainConfig> = {
     nativeCurrency: { name: 'BERA', symbol: 'BERA', decimals: 18 },
     rpcUrls: [
       'https://rpc.berachain.com',
+      'https://berachain-mainnet.g.alchemy.com/v2/demo',
       'https://berachain.drpc.org',
+      'https://berachain.publicnode.com',
     ],
     blockExplorerUrls: ['https://berascan.com'],
     contracts: {},

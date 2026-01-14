@@ -1,0 +1,60 @@
+# Mythril Security Analysis Configuration
+# Run with: myth analyze src/FeeCollector.sol --solc-json mythril.config.yml
+
+analysis:
+  # Maximum transaction depth to explore
+  max-depth: 50
+
+  # Execution timeout per contract (seconds)
+  execution-timeout: 900
+
+  # Maximum number of state changes
+  solver-timeout: 30000
+
+  # Call state size
+  call-depth-limit: 3
+
+  # Enable parallel execution
+  parallel-solving: true
+
+modules:
+  # Core vulnerability detectors
+  - arbitrary-send
+  - delegatecall
+  - ether-thief
+  - exceptions
+  - external-calls
+  - integer
+  - multiple-sends
+  - state-change-external-call
+  - suicide
+  - tx-origin
+  - unchecked-retval
+  - user-assertions
+
+output:
+  # Output format (json, markdown, text, jsonv2)
+  format: jsonv2
+
+  # Output file
+  outfile: audit/mythril-report.json
+
+solc:
+  # Solidity version
+  version: 0.8.20
+
+  # Optimizer settings
+  optimize: true
+  optimize-runs: 200
+
+  # Remappings
+  remappings:
+    - "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/"
+    - "forge-std/=lib/forge-std/src/"
+
+# Contracts to analyze
+contracts:
+  - src/FeeCollector.sol
+  - src/SwapRouter.sol
+  - src/ReferralRegistry.sol
+  - src/PriceOracle.sol

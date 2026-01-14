@@ -25,6 +25,8 @@ function createInitialSession(): SessionData {
       notifications: true,
       language: 'en',
     },
+    auth: undefined,
+    isAuthenticated: false,
   };
 }
 

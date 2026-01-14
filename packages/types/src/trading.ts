@@ -31,6 +31,9 @@ export type DexAggregator =
   | '1inch'      // EVM
   | 'paraswap'   // EVM
   | '0x'         // EVM
+  | 'oogabooga'  // Berachain
+  | 'dragonswap' // Kaia
+  | 'klayswap'   // Kaia
   | 'stonfi'     // TON
   | 'dedust'     // TON
   | 'cetus'      // Sui

@@ -494,6 +494,17 @@ export {
   type AggregatorQuote,
 } from './aggregators.js';
 
+// Export Kaia utilities
+export {
+  KAIA_CONTRACTS,
+  KAIA_TOKENS,
+  getDragonSwapQuote,
+  getKlaySwapQuote,
+  getKaiaBestQuote,
+  getKaiaPopularPairs,
+  type KaiaQuote,
+} from './kaia.js';
+
 // Factory function to create adapter for a chain
 export function createEvmAdapter(
   chainId: EvmChainId,

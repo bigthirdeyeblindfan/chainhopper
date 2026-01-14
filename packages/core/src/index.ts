@@ -13,3 +13,6 @@ export * from './auth/index.js';
 
 // Re-export price oracle
 export * from './oracle/index.js';
+
+// Re-export contract integrations
+export * from './contracts/index.js';

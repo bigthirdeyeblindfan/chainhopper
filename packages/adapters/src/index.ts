@@ -18,3 +18,13 @@ export {
   type EvmChainId,
   type AggregatorQuote,
 } from './evm/index.js';
+
+// Sui adapter exports
+export {
+  SuiChainAdapter,
+  createSuiAdapter,
+  createSuiConfig,
+  createSuiTestnetConfig,
+  createSuiDevnetConfig,
+  COIN_TYPES as SUI_COIN_TYPES,
+} from './sui/index.js';

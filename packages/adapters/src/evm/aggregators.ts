@@ -1,10 +1,13 @@
 import type { SwapRequest, SwapRoute, DexAggregator } from '@chainhopper/types';
 import { EVM_CHAIN_IDS, type EvmChainId } from './chains.js';
+import { getSonicBestQuote, isSonicChain } from './sonic.js';
+import { getKaiaBestQuote } from './kaia.js';
 
 // Aggregator API endpoints
 const AGGREGATOR_APIS = {
   '1inch': 'https://api.1inch.dev/swap/v6.0',
   paraswap: 'https://apiv5.paraswap.io',
+  oogabooga: 'https://api.oogabooga.io/v1',
 } as const;
 
 // Aggregator support per chain
@@ -12,6 +15,9 @@ const AGGREGATOR_CHAIN_SUPPORT: Record<DexAggregator, EvmChainId[]> = {
   '1inch': ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon', 'bsc', 'avalanche'],
   paraswap: ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon', 'bsc', 'avalanche'],
   '0x': ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon', 'bsc', 'avalanche'],
+  oogabooga: ['berachain'],
+  dragonswap: ['kaia'],
+  klayswap: ['kaia'],
   // Non-EVM aggregators
   jupiter: [],
   stonfi: [],
@@ -19,6 +25,9 @@ const AGGREGATOR_CHAIN_SUPPORT: Record<DexAggregator, EvmChainId[]> = {
   cetus: [],
   turbos: [],
 };
+
+// Chains with native DEX routing (bypass aggregators)
+const NATIVE_DEX_CHAINS: EvmChainId[] = ['sonic', 'kaia'];
 
 export interface AggregatorQuote {
   aggregator: DexAggregator;
@@ -194,15 +203,115 @@ export async function getParaSwapQuote(
 }
 
 /**
+ * Get quote from OogaBooga API (Berachain native aggregator)
+ */
+export async function getOogaBoogaQuote(
+  request: SwapRequest,
+  apiKey?: string
+): Promise<AggregatorQuote | null> {
+  if (request.chainId !== 'berachain') {
+    return null;
+  }
+
+  try {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    if (apiKey) {
+      headers['Authorization'] = `Bearer ${apiKey}`;
+    }
+
+    // OogaBooga uses a similar API structure to other aggregators
+    const quoteResponse = await fetch(`${AGGREGATOR_APIS.oogabooga}/quote`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        tokenIn: request.tokenIn,
+        tokenOut: request.tokenOut,
+        amount: request.amountIn.toString(),
+        slippage: request.slippage,
+        sender: request.recipient,
+      }),
+    });
+
+    if (!quoteResponse.ok) return null;
+
+    const quoteData = await quoteResponse.json();
+
+    // Build swap transaction
+    const swapResponse = await fetch(`${AGGREGATOR_APIS.oogabooga}/swap`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        tokenIn: request.tokenIn,
+        tokenOut: request.tokenOut,
+        amount: request.amountIn.toString(),
+        slippage: request.slippage,
+        sender: request.recipient,
+        recipient: request.recipient,
+      }),
+    });
+
+    let txData = '0x';
+    let txTo = '';
+    let txValue = 0n;
+
+    if (swapResponse.ok) {
+      const swapData = await swapResponse.json();
+      txData = swapData.tx?.data || swapData.data || '0x';
+      txTo = swapData.tx?.to || swapData.to || '';
+      txValue = BigInt(swapData.tx?.value || swapData.value || '0');
+    }
+
+    return {
+      aggregator: 'oogabooga' as DexAggregator,
+      amountOut: BigInt(quoteData.amountOut || quoteData.expectedOutput || '0'),
+      estimatedGas: BigInt(quoteData.estimatedGas || quoteData.gas || '300000'),
+      priceImpact: parseFloat(quoteData.priceImpact || '0'),
+      route: parseOogaBoogaRoute(quoteData.route, request.tokenIn, request.tokenOut),
+      txData,
+      txTo,
+      txValue,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Get best quote from all aggregators
  */
 export async function getBestQuote(
   request: SwapRequest,
-  options?: { oneInchApiKey?: string }
+  options?: { oneInchApiKey?: string; oogaBoogaApiKey?: string }
 ): Promise<AggregatorQuote | null> {
+  // Route Sonic chain to native DEXes
+  if (isSonicChain(request.chainId)) {
+    return getSonicBestQuote(request);
+  }
+
+  // Route Kaia chain to native DEXes (DragonSwap, KLAYswap)
+  if (request.chainId === 'kaia') {
+    const kaiaQuote = await getKaiaBestQuote(request);
+    if (kaiaQuote) {
+      return {
+        aggregator: kaiaQuote.aggregator,
+        amountOut: kaiaQuote.amountOut,
+        estimatedGas: kaiaQuote.estimatedGas,
+        priceImpact: kaiaQuote.priceImpact,
+        route: kaiaQuote.route,
+        txData: kaiaQuote.txData,
+        txTo: kaiaQuote.txTo,
+        txValue: kaiaQuote.txValue,
+      };
+    }
+    return null;
+  }
+
   const quotes = await Promise.all([
     get1inchQuote(request, options?.oneInchApiKey),
     getParaSwapQuote(request),
+    getOogaBoogaQuote(request, options?.oogaBoogaApiKey),
   ]);
 
   const validQuotes = quotes.filter((q): q is AggregatorQuote => q !== null && q.amountOut > 0n);
@@ -326,6 +435,55 @@ function parseParaSwapRoute(
   } catch {
     return [{
       dex: 'paraswap',
+      poolAddress: '',
+      tokenIn,
+      tokenOut,
+      percentage: 100,
+    }];
+  }
+}
+
+// Helper to parse OogaBooga route (Berachain)
+function parseOogaBoogaRoute(
+  route: unknown,
+  tokenIn: string,
+  tokenOut: string
+): SwapRoute[] {
+  if (!Array.isArray(route)) {
+    return [{
+      dex: 'bex',
+      poolAddress: '',
+      tokenIn,
+      tokenOut,
+      percentage: 100,
+    }];
+  }
+
+  try {
+    const routes: SwapRoute[] = [];
+
+    for (const step of route) {
+      if (step && typeof step === 'object') {
+        routes.push({
+          dex: String((step as Record<string, unknown>).dex || (step as Record<string, unknown>).protocol || 'bex'),
+          poolAddress: String((step as Record<string, unknown>).pool || (step as Record<string, unknown>).poolAddress || ''),
+          tokenIn: String((step as Record<string, unknown>).tokenIn || tokenIn),
+          tokenOut: String((step as Record<string, unknown>).tokenOut || tokenOut),
+          percentage: Number((step as Record<string, unknown>).percentage || (step as Record<string, unknown>).percent || 100),
+        });
+      }
+    }
+
+    return routes.length > 0 ? routes : [{
+      dex: 'bex',
+      poolAddress: '',
+      tokenIn,
+      tokenOut,
+      percentage: 100,
+    }];
+  } catch {
+    return [{
+      dex: 'bex',
       poolAddress: '',
       tokenIn,
       tokenOut,

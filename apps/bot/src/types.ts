@@ -4,6 +4,13 @@ import type { MenuFlavor } from '@grammyjs/menu';
 
 export type ChainId =
   | 'ton'
+  | 'ethereum'
+  | 'base'
+  | 'arbitrum'
+  | 'optimism'
+  | 'polygon'
+  | 'avalanche'
+  | 'bsc'
   | 'sonic'
   | 'kaia'
   | 'sui'
@@ -40,12 +47,20 @@ export interface TokenInfo {
   name?: string;
 }
 
+export interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: number;
+}
+
 export interface SessionData {
   chainId: ChainId;
   walletAddress?: string;
   pendingSwap?: SwapQuote;
   step: SessionStep;
   settings: UserSettings;
+  auth?: AuthTokens;
+  isAuthenticated: boolean;
 }
 
 export interface UserSettings {

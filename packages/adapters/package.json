@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@chainhopper/types": "*",
+    "@mysten/sui": "^1.0.0",
     "@ton/ton": "^13.9.0",
     "viem": "^2.7.3"
   },
