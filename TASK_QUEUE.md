@@ -26,6 +26,9 @@ If a checkout is >2 hours old with no commits, you may take it over.
 
 | Task ID | Agent | Checkout Time | Expires |
 |---------|-------|---------------|---------|
+| S-004 | agent-deploy | 2025-01-14 | 2hrs |
+| INT-004 | agent-d | 2025-01-14 | 2hrs |
+| INT-001 | agent-contracts | 2025-01-14 | 2hrs |
 
 ---
 
@@ -68,7 +71,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | S-001 | FeeCollector Contract | None | DONE | FeeCollector.sol + tests complete |
 | S-002 | SwapRouter Contract | S-001 | DONE | SwapRouter.sol + interfaces + tests |
 | S-003 | ReferralRegistry Contract | S-001 | DONE | ReferralRegistry.sol + interface + tests |
-| S-004 | Contract Deploy Scripts | S-001,S-002,S-003 | TODO | Foundry scripts |
+| S-004 | Contract Deploy Scripts | S-001,S-002,S-003 | IN_PROGRESS | Foundry scripts |
 | S-005 | TON Contract (FunC) | None | DONE | FunC + Tact implementations complete |
 
 ---
@@ -80,7 +83,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | INT-001 | Web ↔ API Integration | I-001,I-003 | TODO | Frontend connects |
 | INT-002 | Telegram ↔ API Integration | I-001,I-002 | TODO | Bot calls API |
 | INT-003 | Contract Integration | S-004,F-005,F-006 | TODO | Adapters + contracts |
-| INT-004 | Price Oracle Integration | F-004 | TODO | Chainlink/Pyth |
+| INT-004 | Price Oracle Integration | F-004 | IN_PROGRESS | Chainlink/Pyth |
 
 ---
 
