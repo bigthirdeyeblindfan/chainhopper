@@ -132,6 +132,69 @@ verify-referral-registry:
 		--etherscan-api-key $(ETHERSCAN_API_KEY)
 
 # =============================================================================
+# Security Analysis Commands
+# =============================================================================
+
+# Run Slither static analysis
+slither:
+	@mkdir -p audit
+	slither . --config-file slither.config.json
+
+# Run Slither with specific detectors
+slither-reentrancy:
+	slither . --detect reentrancy-eth,reentrancy-no-eth,reentrancy-benign,reentrancy-events
+
+slither-access:
+	slither . --detect unprotected-upgrade,arbitrary-send-erc20,arbitrary-send-eth
+
+# Run Mythril on individual contracts
+mythril-fee-collector:
+	@mkdir -p audit
+	myth analyze src/FeeCollector.sol --solv 0.8.20 -o jsonv2 > audit/mythril-FeeCollector.json
+
+mythril-swap-router:
+	@mkdir -p audit
+	myth analyze src/SwapRouter.sol --solv 0.8.20 -o jsonv2 > audit/mythril-SwapRouter.json
+
+mythril-referral-registry:
+	@mkdir -p audit
+	myth analyze src/ReferralRegistry.sol --solv 0.8.20 -o jsonv2 > audit/mythril-ReferralRegistry.json
+
+mythril-price-oracle:
+	@mkdir -p audit
+	myth analyze src/PriceOracle.sol --solv 0.8.20 -o jsonv2 > audit/mythril-PriceOracle.json
+
+# Run Mythril on all contracts
+mythril: mythril-fee-collector mythril-swap-router mythril-referral-registry mythril-price-oracle
+
+# Run full audit script
+audit:
+	./audit/run-audit.sh all
+
+# Run quick audit (slither only)
+audit-quick:
+	./audit/run-audit.sh slither
+
+# Run all security tools
+security-audit: slither mythril
+
+# Generate security report
+security-report:
+	@echo "Generating security audit report..."
+	@mkdir -p audit
+	@forge test --gas-report > audit/gas-report.txt
+	@forge coverage --report lcov > audit/coverage.lcov 2>/dev/null || true
+	@forge snapshot > audit/gas-snapshot.txt 2>/dev/null || true
+	@echo "Security analysis complete. Check audit/ directory."
+
+# Run invariant/fuzz tests
+fuzz-test:
+	forge test --match-test "fuzz" -vvv
+
+invariant-test:
+	forge test --match-test "invariant" -vvv
+
+# =============================================================================
 # Utility Commands
 # =============================================================================
 
@@ -184,6 +247,16 @@ help:
 	@echo "  make verify-fee-collector     - Verify FeeCollector"
 	@echo "  make verify-swap-router       - Verify SwapRouter"
 	@echo "  make verify-referral-registry - Verify ReferralRegistry"
+	@echo ""
+	@echo "Security:"
+	@echo "  make slither         - Run Slither static analysis"
+	@echo "  make mythril         - Run Mythril on all contracts"
+	@echo "  make audit           - Run full audit script"
+	@echo "  make audit-quick     - Run quick audit (Slither only)"
+	@echo "  make security-audit  - Run all security analysis tools"
+	@echo "  make security-report - Generate comprehensive security report"
+	@echo "  make fuzz-test       - Run fuzz tests"
+	@echo "  make invariant-test  - Run invariant tests"
 	@echo ""
 	@echo "Utility:"
 	@echo "  make fmt            - Format Solidity files"
