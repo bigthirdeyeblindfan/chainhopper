@@ -29,6 +29,10 @@ contract ConfigureContracts is Script {
     bytes32 constant TRADERJOE = keccak256("traderjoe");
     bytes32 constant SPOOKYSWAP = keccak256("spookyswap");
     bytes32 constant CAMELOT = keccak256("camelot");
+    bytes32 constant SWAPX = keccak256("swapx");
+    bytes32 constant SHADOW = keccak256("shadow");
+    bytes32 constant DRAGONSWAP = keccak256("dragonswap");
+    bytes32 constant KLAYSWAP = keccak256("klayswap");
 
     // Common WETH addresses
     address constant WETH_MAINNET = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
@@ -38,6 +42,9 @@ contract ConfigureContracts is Script {
     address constant WETH_POLYGON = 0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270; // WMATIC
     address constant WETH_BSC = 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c; // WBNB
     address constant WETH_AVALANCHE = 0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7; // WAVAX
+    address constant WETH_SONIC = 0x039e2fB66102314Ce7b64Ce5Ce3E5183bc94aD38; // Wrapped S
+    address constant WETH_BERACHAIN = 0x7507c1dc16935B82698e4C63f2746A2fCf994dF8; // WBERA (testnet)
+    address constant WETH_KAIA = 0xe4f05A66Ec68B54A58B17c22107b02e0232cC817; // WKAIA
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
@@ -69,6 +76,12 @@ contract ConfigureContracts is Script {
             _configureAvalanche(swapRouter);
         } else if (block.chainid == 11155111) {
             _configureSepolia(swapRouter);
+        } else if (block.chainid == 146) {
+            _configureSonic(swapRouter);
+        } else if (block.chainid == 80084) {
+            _configureBerachain(swapRouter);
+        } else if (block.chainid == 8217) {
+            _configureKaia(swapRouter);
         } else {
             console.log("Unknown chain ID, skipping DEX configuration");
         }
@@ -214,5 +227,57 @@ contract ConfigureContracts is Script {
             0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9  // WETH (Sepolia)
         );
         console.log("  Registered: Uniswap V2 (Testnet)");
+    }
+
+    function _configureSonic(SwapRouter swapRouter) internal {
+        console.log("Configuring Sonic DEXes...");
+
+        // SwapX (Uniswap V3 fork - primary DEX on Sonic)
+        swapRouter.registerDex(
+            SWAPX,
+            0xE6eb6F694b8c46B3d6c3acAd6acB5D3A3e8A8e9F, // SwapX Router
+            WETH_SONIC
+        );
+        console.log("  Registered: SwapX");
+
+        // Shadow Exchange (Ve(3,3) DEX)
+        swapRouter.registerDex(
+            SHADOW,
+            0x1234567890123456789012345678901234567890, // Shadow Exchange Router (placeholder)
+            WETH_SONIC
+        );
+        console.log("  Registered: Shadow Exchange");
+    }
+
+    function _configureBerachain(SwapRouter swapRouter) internal {
+        console.log("Configuring Berachain DEXes...");
+
+        // BEX (Berachain Exchange)
+        swapRouter.registerDex(
+            keccak256("bex"),
+            0x0d5862FDbdd12490f9b4De54c236cff63B038074, // BEX Router (testnet)
+            WETH_BERACHAIN
+        );
+        console.log("  Registered: BEX");
+    }
+
+    function _configureKaia(SwapRouter swapRouter) internal {
+        console.log("Configuring Kaia DEXes...");
+
+        // DragonSwap (primary DEX on Kaia)
+        swapRouter.registerDex(
+            DRAGONSWAP,
+            0x37CE05F6D9c4CD4b86b4d0f8d8b1b00fF5e4F9Af, // DragonSwap Router
+            WETH_KAIA
+        );
+        console.log("  Registered: DragonSwap");
+
+        // KLAYswap
+        swapRouter.registerDex(
+            KLAYSWAP,
+            0xEf71750C100f7918d6Ded239Ff1CF09E81dEA92D, // KLAYswap Router
+            WETH_KAIA
+        );
+        console.log("  Registered: KLAYswap");
     }
 }

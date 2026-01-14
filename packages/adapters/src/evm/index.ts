@@ -505,6 +505,22 @@ export {
   type KaiaQuote,
 } from './kaia.js';
 
+// Export Sonic utilities
+export {
+  SONIC_CHAIN_ID,
+  SONIC_ROUTERS,
+  SONIC_FACTORIES,
+  SONIC_TOKENS,
+  SWAPX_ROUTER_ABI,
+  SHADOW_ROUTER_ABI,
+  getSwapXQuote,
+  getShadowQuote,
+  getSonicBestQuote,
+  buildSonicSwapTransaction,
+  getSonicDexes,
+  isSonicChain,
+} from './sonic.js';
+
 // Factory function to create adapter for a chain
 export function createEvmAdapter(
   chainId: EvmChainId,

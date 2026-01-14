@@ -110,6 +110,15 @@ deploy-bsc:
 deploy-avalanche:
 	@$(MAKE) deploy-all RPC_URL=$(AVALANCHE_RPC_URL)
 
+deploy-sonic:
+	@$(MAKE) deploy-all RPC_URL=$(SONIC_RPC_URL)
+
+deploy-berachain:
+	@$(MAKE) deploy-all RPC_URL=$(BERACHAIN_RPC_URL)
+
+deploy-kaia:
+	@$(MAKE) deploy-all RPC_URL=$(KAIA_RPC_URL)
+
 # =============================================================================
 # Verification Commands
 # =============================================================================
@@ -239,6 +248,9 @@ help:
 	@echo "  make deploy-mainnet - Deploy to Ethereum mainnet"
 	@echo "  make deploy-arbitrum - Deploy to Arbitrum"
 	@echo "  make deploy-base    - Deploy to Base"
+	@echo "  make deploy-sonic   - Deploy to Sonic"
+	@echo "  make deploy-berachain - Deploy to Berachain"
+	@echo "  make deploy-kaia    - Deploy to Kaia"
 	@echo ""
 	@echo "Configure:"
 	@echo "  make configure      - Register DEX routers on SwapRouter"
