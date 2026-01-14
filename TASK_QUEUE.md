@@ -1,16 +1,40 @@
 # ChainHopper Task Queue
 
-**Instructions for Agents**: Read this file, find the first task with status `TODO` where all dependencies are `DONE`, mark it `IN_PROGRESS`, do the work, then mark it `DONE` and commit.
+## CHECKOUT SYSTEM (READ FIRST!)
 
-**How to use**: Open Claude and say: `"Read TASK_QUEUE.md and do the next available task. Update the file when done."`
+**To avoid rate limit errors, agents MUST checkout tasks before working.**
+
+### Before Starting:
+1. Pull latest: `git pull`
+2. Check "Active Checkouts" below - skip tasks already checked out
+3. Add your checkout row with task ID + timestamp
+4. Commit + push the checkout BEFORE coding
+5. Do the work
+6. Mark task `DONE`, remove your checkout row, commit + push
+
+### Checkout Format:
+```
+| F-006 | agent-1 | 2025-01-14 04:30 | 2hrs |
+```
+
+### Stale Checkouts:
+If a checkout is >2 hours old with no commits, you may take it over.
+
+---
+
+## Active Checkouts
+
+| Task ID | Agent | Checkout Time | Expires |
+|---------|-------|---------------|---------|
+| F-003 | agent-auth | 2025-01-14 | 2hrs |
+| F-005 | agent-ton | 2025-01-14 | 2hrs |
 
 ---
 
 ## Status Legend
 - `DONE` - Completed
-- `IN_PROGRESS` - Currently being worked on (by which agent)
-- `TODO` - Ready to start (check dependencies first)
-- `BLOCKED` - Waiting on something
+- `IN_PROGRESS` - Checked out and being worked on
+- `TODO` - Available (check Active Checkouts first!)
 
 ---
 
@@ -19,10 +43,10 @@
 | ID | Task | Dependencies | Status | Notes |
 |----|------|--------------|--------|-------|
 | F-001 | Core Types & Interfaces | None | DONE | @chainhopper/types created |
-| F-002 | Database Schema (Prisma) | F-001 | TODO | packages/core - Agent 5 may be doing this |
-| F-003 | Authentication System | F-001 | TODO | JWT + API key auth in packages/core |
-| F-004 | Base Adapter Implementation | F-001 | DONE | Interfaces in @chainhopper/types |
-| F-005 | TON Adapter | F-004 | TODO | packages/adapters/ton |
+| F-002 | Database Schema (Prisma) | F-001 | DONE | packages/core/prisma |
+| F-003 | Authentication System | F-001 | IN_PROGRESS | JWT + API key auth |
+| F-004 | Base Adapter Implementation | F-001 | DONE | Interfaces in types |
+| F-005 | TON Adapter | F-004 | IN_PROGRESS | packages/adapters/ton |
 | F-006 | EVM Adapter (Generic) | F-004 | TODO | packages/adapters/evm |
 
 ---
@@ -31,11 +55,11 @@
 
 | ID | Task | Dependencies | Status | Notes |
 |----|------|--------------|--------|-------|
-| I-001 | REST API Core | F-003 | TODO | Agent 3 setting up skeleton |
-| I-002 | Telegram Bot Core | F-003 | TODO | Agent 1 setting up skeleton |
-| I-003 | Web Panel Setup | F-003 | TODO | Agent 4 setting up skeleton |
-| I-004 | WebSocket Server | I-001 | TODO | Real-time price/trade updates |
-| I-005 | API Documentation (OpenAPI) | I-001 | TODO | Swagger/OpenAPI spec |
+| I-001 | REST API Core | F-003 | TODO | Hono + endpoints |
+| I-002 | Telegram Bot Core | F-003 | TODO | Grammy + commands |
+| I-003 | Web Panel Setup | F-003 | TODO | Next.js + UI |
+| I-004 | WebSocket Server | I-001 | TODO | Real-time updates |
+| I-005 | API Documentation | I-001 | TODO | OpenAPI spec |
 
 ---
 
@@ -43,10 +67,10 @@
 
 | ID | Task | Dependencies | Status | Notes |
 |----|------|--------------|--------|-------|
-| S-001 | FeeCollector Contract | None | TODO | Agent 2 may be doing this |
-| S-002 | SwapRouter Contract | S-001 | TODO | Unified swap interface |
-| S-003 | ReferralRegistry Contract | S-001 | TODO | On-chain referral tracking |
-| S-004 | Contract Deployment Scripts | S-001,S-002,S-003 | TODO | Foundry scripts |
+| S-001 | FeeCollector Contract | None | TODO | Profit-share logic |
+| S-002 | SwapRouter Contract | S-001 | TODO | Swap interface |
+| S-003 | ReferralRegistry Contract | S-001 | TODO | Referral tracking |
+| S-004 | Contract Deploy Scripts | S-001,S-002,S-003 | TODO | Foundry scripts |
 | S-005 | TON Contract (FunC) | None | TODO | FunC fee collector |
 
 ---
@@ -55,10 +79,10 @@
 
 | ID | Task | Dependencies | Status | Notes |
 |----|------|--------------|--------|-------|
-| INT-001 | Web Panel ↔ API Integration | I-001,I-003 | TODO | Connect frontend to backend |
-| INT-002 | Telegram ↔ API Integration | I-001,I-002 | TODO | Bot calls API for trades |
-| INT-003 | Contract Integration | S-004,F-005,F-006 | TODO | Adapters call contracts |
-| INT-004 | Price Oracle Integration | F-004 | TODO | Chainlink/Pyth/DexScreener |
+| INT-001 | Web ↔ API Integration | I-001,I-003 | TODO | Frontend connects |
+| INT-002 | Telegram ↔ API Integration | I-001,I-002 | TODO | Bot calls API |
+| INT-003 | Contract Integration | S-004,F-005,F-006 | TODO | Adapters + contracts |
+| INT-004 | Price Oracle Integration | F-004 | TODO | Chainlink/Pyth |
 
 ---
 
@@ -66,131 +90,91 @@
 
 | ID | Task | Dependencies | Status | Notes |
 |----|------|--------------|--------|-------|
-| P-001 | Testing Suite | INT-* | TODO | Unit + integration + e2e |
+| P-001 | Testing Suite | INT-* | TODO | Unit + e2e tests |
 | P-002 | Security Audit Prep | S-* | TODO | Slither + Mythril |
-| P-003 | Documentation | All | TODO | API docs, user guides |
+| P-003 | Documentation | All | TODO | API docs, guides |
 | P-004 | Grant Applications | P-003 | TODO | Human task |
-| P-005 | Beta Launch | All | TODO | Deploy to production |
+| P-005 | Beta Launch | All | TODO | Production deploy |
 
 ---
 
-## Detailed Task Specs
+## Staggered Agent Commands
 
-### F-002: Database Schema (Prisma)
-```
-Location: packages/core/prisma/schema.prisma
-Models needed:
-- User (id, telegramId, email, tier, referralCode, settings, createdAt)
-- Wallet (id, userId, chainId, address, isDefault)
-- Trade (id, userId, chainId, tokenIn, tokenOut, amountIn, amountOut, txHash, status, profit)
-- Position (id, userId, trades, entryPrice, exitPrice, pnl, isOpen)
-- Referral (id, referrerId, refereeId, code, tier, totalVolume, earnings)
-- ApiKey (id, userId, keyHash, permissions, rateLimit, expiresAt)
-- FeeCollection (id, tradeId, amount, txHash, collectedAt)
+**Run ONE at a time, wait 60s between each to avoid rate limits:**
+
+```bash
+# Wave 1 - Independent tasks (no deps on each other)
+claude "git pull && Read TASK_QUEUE.md. Checkout S-001 (FeeCollector), add to Active Checkouts, commit+push, then implement."
+
+# Wait 60s...
+claude "git pull && Read TASK_QUEUE.md. Checkout S-005 (TON Contract), add to Active Checkouts, commit+push, then implement."
+
+# Wait 60s...
+claude "git pull && Read TASK_QUEUE.md. Checkout F-006 (EVM Adapter), add to Active Checkouts, commit+push, then implement."
+
+# Wave 2 - After F-003 completes
+claude "git pull && Read TASK_QUEUE.md. Checkout I-001 (REST API), add to Active Checkouts, commit+push, then implement."
+
+# Wait 60s...
+claude "git pull && Read TASK_QUEUE.md. Checkout I-002 (Telegram Bot), add to Active Checkouts, commit+push, then implement."
+
+# Wait 60s...
+claude "git pull && Read TASK_QUEUE.md. Checkout I-003 (Web Panel), add to Active Checkouts, commit+push, then implement."
 ```
 
-### F-003: Authentication System
+---
+
+## Quick Reference
+
+**Checkout a task:**
+```bash
+claude "git pull && Read TASK_QUEUE.md. Checkout task <ID>, commit the checkout, then implement it. When done mark DONE and remove checkout."
 ```
-Location: packages/core/src/auth/
-Files:
-- jwt.ts - JWT token generation/verification
-- apiKey.ts - API key generation/validation
-- telegram.ts - Telegram user verification
-- middleware.ts - Auth middleware for Hono
+
+**Check status:**
+```bash
+claude "Read TASK_QUEUE.md. What tasks are available and not checked out?"
+```
+
+**Resume work:**
+```bash
+claude "git pull && Read TASK_QUEUE.md. I have task <ID> checked out. Continue implementing it."
+```
+
+---
+
+## Task Specs
+
+### F-003: Auth System
+```
+packages/core/src/auth/
+- jwt.ts, apiKey.ts, telegram.ts, middleware.ts
 ```
 
 ### F-005: TON Adapter
 ```
-Location: packages/adapters/src/ton/
-- Use @ton/ton SDK
-- Implement ChainAdapter interface from @chainhopper/types
-- Support STONfi and DeDust DEXes
-- Handle jetton transfers
+packages/adapters/src/ton/
+SDK: @ton/ton | DEXes: STONfi, DeDust
 ```
 
 ### F-006: EVM Adapter
 ```
-Location: packages/adapters/src/evm/
-- Use viem
-- Implement ChainAdapter interface
-- Support 1inch/ParaSwap/0x aggregators
-- Generic for all EVM chains (config per chain)
+packages/adapters/src/evm/
+SDK: viem | Aggregators: 1inch, ParaSwap
 ```
 
-### I-004: WebSocket Server
+### S-001: FeeCollector
 ```
-Location: apps/api/src/ws/
-Channels:
-- prices:{chainId} - Real-time price updates
-- trades:{userId} - User's trade updates
-- positions:{userId} - Position P&L updates
+packages/contracts/src/FeeCollector.sol
+Profit-share: 15/10/5% tiers
 ```
 
-### S-002: SwapRouter Contract
+### S-005: TON Contract
 ```
-Location: packages/contracts/src/SwapRouter.sol
-- Takes swap calldata from aggregator
-- Calls FeeCollector to record trade
-- Emits events for tracking
-- Non-custodial (user signs tx)
-```
-
-### S-003: ReferralRegistry Contract
-```
-Location: packages/contracts/src/ReferralRegistry.sol
-- Register referral codes on-chain
-- Track referee → referrer mapping
-- Calculate and distribute referral rewards
-- Emit events for off-chain tracking
-```
-
-### INT-004: Price Oracle Integration
-```
-Location: packages/core/src/oracle/
-Sources (in priority order):
-1. Chainlink (most reliable for majors)
-2. Pyth (fast updates)
-3. DexScreener API (for new tokens)
-4. DEX spot price (last resort)
+packages/contracts/ton/fee-collector.fc
+FunC fee collection
 ```
 
 ---
 
-## Agent Assignment (for parallel work)
-
-If you're starting fresh and want to parallelize:
-
-```bash
-# Agent 1 - After bot skeleton done
-claude "Read TASK_QUEUE.md. Complete I-002 (Telegram Bot Core) - add swap commands, wallet connection, inline menus."
-
-# Agent 2 - After contracts skeleton done
-claude "Read TASK_QUEUE.md. Complete S-002 (SwapRouter) and S-003 (ReferralRegistry) contracts."
-
-# Agent 3 - After API skeleton done
-claude "Read TASK_QUEUE.md. Complete I-001 (REST API Core) - add /quote, /swap, /portfolio endpoints."
-
-# Agent 4 - After web skeleton done
-claude "Read TASK_QUEUE.md. Complete I-003 (Web Panel) - add dashboard, portfolio view, trade UI."
-
-# Agent 5 - After Prisma schema done
-claude "Read TASK_QUEUE.md. Complete F-003 (Auth System) - JWT, API keys, Telegram verification."
-
-# Agent 6 - Adapters
-claude "Read TASK_QUEUE.md. Complete F-005 (TON Adapter) and F-006 (EVM Adapter)."
-```
-
----
-
-## Completion Checklist
-
-When marking a task DONE, ensure:
-- [ ] Code compiles without errors
-- [ ] Basic tests pass (if applicable)
-- [ ] Changes committed with conventional commit message
-- [ ] This file updated with DONE status
-- [ ] Any blockers for dependent tasks noted
-
----
-
-*Last updated: [Agent updates this timestamp]*
+*Last updated by agents on commit*
