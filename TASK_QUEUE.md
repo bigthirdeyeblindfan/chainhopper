@@ -26,7 +26,6 @@ If a checkout is >2 hours old with no commits, you may take it over.
 
 | Task ID | Agent | Checkout Time | Expires |
 |---------|-------|---------------|---------|
-| INT-004 | agent-d | 2025-01-14 | 2hrs |
 | INT-001 | agent-contracts | 2025-01-14 | 2hrs |
 | INT-002 | agent-tg-api | 2025-01-14 | 2hrs |
 
@@ -83,7 +82,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | INT-001 | Web ↔ API Integration | I-001,I-003 | IN_PROGRESS | Frontend connects |
 | INT-002 | Telegram ↔ API Integration | I-001,I-002 | IN_PROGRESS | Bot calls API |
 | INT-003 | Contract Integration | S-004,F-005,F-006 | TODO | Adapters + contracts |
-| INT-004 | Price Oracle Integration | F-004 | IN_PROGRESS | Chainlink/Pyth |
+| INT-004 | Price Oracle Integration | F-004 | DONE | PriceOracle.sol + interfaces + tests |
 
 ---
 
