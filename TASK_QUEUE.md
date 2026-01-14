@@ -26,7 +26,6 @@ If a checkout is >2 hours old with no commits, you may take it over.
 
 | Task ID | Agent | Checkout Time | Expires |
 |---------|-------|---------------|---------|
-| F-006 | agent-evm | 2025-01-14 | 2hrs |
 | I-001 | agent-api | 2025-01-14 | 2hrs |
 | S-002 | agent-d | 2025-01-14 | 2hrs |
 | S-005 | agent-contracts | 2025-01-14 | 2hrs |
@@ -49,7 +48,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | F-003 | Authentication System | F-001 | DONE | packages/core/src/auth/ complete |
 | F-004 | Base Adapter Implementation | F-001 | DONE | Interfaces in types |
 | F-005 | TON Adapter | F-004 | DONE | STONfi + DeDust integration |
-| F-006 | EVM Adapter (Generic) | F-004 | IN_PROGRESS | packages/adapters/evm |
+| F-006 | EVM Adapter (Generic) | F-004 | DONE | 1inch + ParaSwap, 10 chains |
 
 ---
 

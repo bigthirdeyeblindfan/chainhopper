@@ -1,0 +1,29 @@
+{
+  "name": "@chainhopper/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@chainhopper/core": "*",
+    "@chainhopper/types": "*",
+    "@hono/node-server": "^1.8.0",
+    "@hono/swagger-ui": "^0.2.0",
+    "@hono/zod-openapi": "^0.9.0",
+    "hono": "^4.0.0",
+    "zod": "^3.22.0",
+    "dotenv": "^16.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0"
+  }
+}

@@ -1,0 +1,391 @@
+;; FeeCollector.fc
+;; SPDX-License-Identifier: MIT
+;;
+;; TON Fee Collector Contract for ChainHopper
+;; Implements profit-share fee model with referral system
+;;
+;; Storage layout (TL-B):
+;; storage#_ owner_address:MsgAddress
+;;           treasury_address:MsgAddress
+;;           platform_fee_bps:uint16
+;;           referral_share_bps:uint16
+;;           total_volume:Coins
+;;           total_fees:Coins
+;;           total_trades:uint64
+;;           is_paused:Bool
+;;           referrals:^Cell = Storage;
+;;
+;; Tier system (profit-share):
+;;   Free:       15% (1500 bps)
+;;   Holder:     10% (1000 bps) - 1,000 $HOPPER
+;;   Staker:      5% (500 bps)  - 10,000 veHOPPER
+;;   Enterprise:  2-5% custom
+;;
+;; Referral tiers (based on weekly volume):
+;;   Bronze:  <$10K   - 20% referrer share, 5% referee discount
+;;   Silver:  $10-50K - 25% referrer share, 7.5% referee discount
+;;   Gold:    $50-200K- 30% referrer share, 10% referee discount
+;;   Diamond: >$200K  - 35% referrer share, 10% referee discount
+
+#include "stdlib.fc";
+
+;; ============ Op Codes ============
+const int op::collect_fee = 0x1;
+const int op::register_referrer = 0x2;
+const int op::claim_referral = 0x3;
+const int op::withdraw_fees = 0x4;
+const int op::update_fee = 0x5;
+const int op::set_treasury = 0x6;
+const int op::set_user_tier = 0x7;
+const int op::pause = 0x8;
+const int op::unpause = 0x9;
+const int op::transfer_ownership = 0xa;
+
+;; ============ Error Codes ============
+const int error::unauthorized = 100;
+const int error::invalid_address = 101;
+const int error::already_has_referrer = 102;
+const int error::cannot_self_refer = 103;
+const int error::fee_too_high = 104;
+const int error::no_earnings = 105;
+const int error::paused = 106;
+const int error::insufficient_balance = 107;
+
+;; ============ Constants ============
+const int BPS_DENOMINATOR = 10000;
+const int MAX_FEE_BPS = 2000;        ;; 20% max
+const int FREE_TIER_BPS = 1500;      ;; 15%
+const int HOLDER_TIER_BPS = 1000;    ;; 10%
+const int STAKER_TIER_BPS = 500;     ;; 5%
+const int MIN_ENTERPRISE_BPS = 200;  ;; 2%
+const int MAX_ENTERPRISE_BPS = 500;  ;; 5%
+
+;; Tier enum values
+const int TIER_FREE = 0;
+const int TIER_HOLDER = 1;
+const int TIER_STAKER = 2;
+const int TIER_ENTERPRISE = 3;
+
+;; ============ Storage Functions ============
+
+;; Load contract data from storage
+(slice, slice, int, int, int, int, int, int, cell) load_data() inline {
+    slice ds = get_data().begin_parse();
+    return (
+        ds~load_msg_addr(),      ;; owner_address
+        ds~load_msg_addr(),      ;; treasury_address
+        ds~load_uint(16),        ;; platform_fee_bps
+        ds~load_uint(16),        ;; referral_share_bps
+        ds~load_coins(),         ;; total_volume
+        ds~load_coins(),         ;; total_fees
+        ds~load_uint(64),        ;; total_trades
+        ds~load_int(1),          ;; is_paused
+        ds~load_ref()            ;; referrals dict
+    );
+}
+
+;; Save contract data to storage
+() save_data(slice owner, slice treasury, int fee_bps, int ref_share_bps,
+             int volume, int fees, int trades, int paused, cell referrals) impure inline {
+    set_data(begin_cell()
+        .store_slice(owner)
+        .store_slice(treasury)
+        .store_uint(fee_bps, 16)
+        .store_uint(ref_share_bps, 16)
+        .store_coins(volume)
+        .store_coins(fees)
+        .store_uint(trades, 64)
+        .store_int(paused, 1)
+        .store_ref(referrals)
+        .end_cell()
+    );
+}
+
+;; ============ Helper Functions ============
+
+;; Get tier fee in basis points
+int get_tier_fee_bps(int tier) inline {
+    if (tier == TIER_STAKER) {
+        return STAKER_TIER_BPS;
+    }
+    if (tier == TIER_HOLDER) {
+        return HOLDER_TIER_BPS;
+    }
+    if (tier == TIER_ENTERPRISE) {
+        return MAX_ENTERPRISE_BPS;  ;; Default enterprise, can be customized
+    }
+    return FREE_TIER_BPS;  ;; Default to free tier
+}
+
+;; Get referral tier config based on volume (returns referrer_share_bps, referee_discount_bps)
+(int, int) get_referral_tier(int weekly_volume) inline {
+    ;; Diamond: >$200K (200000 * 10^9 nanoTON assuming 1 TON = $1 for simplicity)
+    if (weekly_volume >= 200000000000000) {
+        return (3500, 1000);  ;; 35% share, 10% discount
+    }
+    ;; Gold: $50K-$200K
+    if (weekly_volume >= 50000000000000) {
+        return (3000, 1000);  ;; 30% share, 10% discount
+    }
+    ;; Silver: $10K-$50K
+    if (weekly_volume >= 10000000000000) {
+        return (2500, 750);   ;; 25% share, 7.5% discount
+    }
+    ;; Bronze: <$10K
+    return (2000, 500);       ;; 20% share, 5% discount
+}
+
+;; Calculate fee for a given amount
+(int, int, int) calculate_fees(int amount, int tier_bps, int has_referrer, int referrer_volume) inline {
+    int effective_bps = tier_bps;
+    int referral_reward = 0;
+
+    if (has_referrer) {
+        (int ref_share_bps, int discount_bps) = get_referral_tier(referrer_volume);
+
+        ;; Apply referee discount
+        int discount = muldiv(tier_bps, discount_bps, BPS_DENOMINATOR);
+        effective_bps = tier_bps - discount;
+
+        ;; Calculate fee then referral reward
+        int fee = muldiv(amount, effective_bps, BPS_DENOMINATOR);
+        referral_reward = muldiv(fee, ref_share_bps, BPS_DENOMINATOR);
+
+        return (fee, amount - fee, referral_reward);
+    }
+
+    int fee = muldiv(amount, effective_bps, BPS_DENOMINATOR);
+    return (fee, amount - fee, 0);
+}
+
+;; Check if sender is owner
+() require_owner(slice sender, slice owner) impure inline {
+    throw_unless(error::unauthorized, equal_slices(sender, owner));
+}
+
+;; Check if contract is not paused
+() require_not_paused(int is_paused) impure inline {
+    throw_if(error::paused, is_paused);
+}
+
+;; ============ Internal Message Handler ============
+
+() recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
+    ;; Ignore empty messages (simple transfers)
+    if (in_msg_body.slice_empty?()) {
+        return ();
+    }
+
+    ;; Parse incoming message
+    slice cs = in_msg_full.begin_parse();
+    int flags = cs~load_uint(4);
+
+    ;; Ignore bounced messages
+    if (flags & 1) {
+        return ();
+    }
+
+    slice sender = cs~load_msg_addr();
+
+    ;; Load operation and query_id
+    int op = in_msg_body~load_uint(32);
+    int query_id = in_msg_body~load_uint(64);
+
+    ;; Load contract state
+    (slice owner, slice treasury, int fee_bps, int ref_share_bps,
+     int total_volume, int total_fees, int total_trades, int is_paused,
+     cell referrals) = load_data();
+
+    ;; ============ Collect Fee ============
+    if (op == op::collect_fee) {
+        require_not_paused(is_paused);
+
+        slice user = in_msg_body~load_msg_addr();
+        int profit_amount = in_msg_body~load_coins();
+        int user_tier = in_msg_body~load_uint(8);
+
+        ;; Get user's tier fee
+        int tier_bps = get_tier_fee_bps(user_tier);
+
+        ;; Check if user has referrer (lookup in referrals dict)
+        (slice referrer, int has_referrer) = referrals.udict_get?(256, slice_hash(user));
+
+        int referrer_volume = 0;
+        if (has_referrer) {
+            ;; In production, would look up referrer's weekly volume
+            referrer_volume = 0;
+        }
+
+        ;; Calculate fees
+        (int fee, int net_profit, int referral_reward) = calculate_fees(
+            profit_amount, tier_bps, has_referrer, referrer_volume
+        );
+
+        ;; Update analytics
+        total_volume = total_volume + profit_amount;
+        total_fees = total_fees + fee;
+        total_trades = total_trades + 1;
+
+        ;; Save updated state
+        save_data(owner, treasury, fee_bps, ref_share_bps,
+                  total_volume, total_fees, total_trades, is_paused, referrals);
+
+        ;; Send response with fee info
+        send_raw_message(begin_cell()
+            .store_uint(0x10, 6)
+            .store_slice(sender)
+            .store_coins(0)
+            .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
+            .store_uint(0xffffffff, 32)  ;; Response op
+            .store_uint(query_id, 64)
+            .store_coins(fee)
+            .store_coins(net_profit)
+            .store_coins(referral_reward)
+            .end_cell(), 64);
+
+        return ();
+    }
+
+    ;; ============ Register Referrer ============
+    if (op == op::register_referrer) {
+        slice referrer = in_msg_body~load_msg_addr();
+
+        ;; Validate referrer
+        throw_if(error::invalid_address, referrer.slice_empty?());
+        throw_if(error::cannot_self_refer, equal_slices(sender, referrer));
+
+        ;; Check if already has referrer
+        (_, int already_has) = referrals.udict_get?(256, slice_hash(sender));
+        throw_if(error::already_has_referrer, already_has);
+
+        ;; Store referrer
+        referrals~udict_set(256, slice_hash(sender), referrer);
+
+        ;; Save updated state
+        save_data(owner, treasury, fee_bps, ref_share_bps,
+                  total_volume, total_fees, total_trades, is_paused, referrals);
+
+        return ();
+    }
+
+    ;; ============ Withdraw Fees (Owner Only) ============
+    if (op == op::withdraw_fees) {
+        require_owner(sender, owner);
+
+        int amount = in_msg_body~load_coins();
+        throw_if(error::insufficient_balance, my_balance < amount + 100000000); ;; Keep 0.1 TON for gas
+
+        ;; Send to treasury
+        send_raw_message(begin_cell()
+            .store_uint(0x10, 6)
+            .store_slice(treasury)
+            .store_coins(amount)
+            .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
+            .end_cell(), 1);
+
+        return ();
+    }
+
+    ;; ============ Update Fee (Owner Only) ============
+    if (op == op::update_fee) {
+        require_owner(sender, owner);
+
+        int new_fee_bps = in_msg_body~load_uint(16);
+        throw_if(error::fee_too_high, new_fee_bps > MAX_FEE_BPS);
+
+        save_data(owner, treasury, new_fee_bps, ref_share_bps,
+                  total_volume, total_fees, total_trades, is_paused, referrals);
+
+        return ();
+    }
+
+    ;; ============ Set Treasury (Owner Only) ============
+    if (op == op::set_treasury) {
+        require_owner(sender, owner);
+
+        slice new_treasury = in_msg_body~load_msg_addr();
+        throw_if(error::invalid_address, new_treasury.slice_empty?());
+
+        save_data(owner, new_treasury, fee_bps, ref_share_bps,
+                  total_volume, total_fees, total_trades, is_paused, referrals);
+
+        return ();
+    }
+
+    ;; ============ Pause (Owner Only) ============
+    if (op == op::pause) {
+        require_owner(sender, owner);
+
+        save_data(owner, treasury, fee_bps, ref_share_bps,
+                  total_volume, total_fees, total_trades, -1, referrals);
+
+        return ();
+    }
+
+    ;; ============ Unpause (Owner Only) ============
+    if (op == op::unpause) {
+        require_owner(sender, owner);
+
+        save_data(owner, treasury, fee_bps, ref_share_bps,
+                  total_volume, total_fees, total_trades, 0, referrals);
+
+        return ();
+    }
+
+    ;; ============ Transfer Ownership (Owner Only) ============
+    if (op == op::transfer_ownership) {
+        require_owner(sender, owner);
+
+        slice new_owner = in_msg_body~load_msg_addr();
+        throw_if(error::invalid_address, new_owner.slice_empty?());
+
+        save_data(new_owner, treasury, fee_bps, ref_share_bps,
+                  total_volume, total_fees, total_trades, is_paused, referrals);
+
+        return ();
+    }
+
+    ;; Unknown operation
+    throw(0xffff);
+}
+
+;; ============ Get Methods ============
+
+;; Get contract configuration
+(slice, slice, int, int, int) get_config() method_id {
+    (slice owner, slice treasury, int fee_bps, int ref_share_bps,
+     _, _, _, int is_paused, _) = load_data();
+    return (owner, treasury, fee_bps, ref_share_bps, is_paused);
+}
+
+;; Get analytics
+(int, int, int) get_stats() method_id {
+    (_, _, _, _, int total_volume, int total_fees, int total_trades, _, _) = load_data();
+    return (total_volume, total_fees, total_trades);
+}
+
+;; Calculate fee for amount (for UI)
+(int, int, int) calculate_fee(int amount, int tier) method_id {
+    int tier_bps = get_tier_fee_bps(tier);
+    return calculate_fees(amount, tier_bps, 0, 0);
+}
+
+;; Get tier fee rate
+int get_tier_rate(int tier) method_id {
+    return get_tier_fee_bps(tier);
+}
+
+;; Check if user has referrer
+int has_referrer(slice user) method_id {
+    (_, _, _, _, _, _, _, _, cell referrals) = load_data();
+    (_, int has) = referrals.udict_get?(256, slice_hash(user));
+    return has;
+}
+
+;; Get referrer for user
+slice get_referrer(slice user) method_id {
+    (_, _, _, _, _, _, _, _, cell referrals) = load_data();
+    (slice referrer, int has) = referrals.udict_get?(256, slice_hash(user));
+    throw_unless(error::invalid_address, has);
+    return referrer;
+}

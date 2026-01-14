@@ -1,0 +1,735 @@
+// ChainHopper Database Schema
+// "Free to trade. Pay only when you profit."
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =============================================================================
+// USERS & AUTHENTICATION
+// =============================================================================
+
+model User {
+  id                String    @id @default(cuid())
+
+  // Authentication identifiers (at least one required)
+  telegramId        String?   @unique
+  telegramUsername  String?
+  email             String?   @unique
+
+  // Tier determines profit-share percentage
+  // free=15%, holder=10%, staker=5%, enterprise=2-5%
+  tier              UserTier  @default(FREE)
+
+  // Referral system
+  referralCode      String    @unique @default(cuid())
+  referredById      String?
+  referredBy        User?     @relation("Referrals", fields: [referredById], references: [id])
+  referrals         User[]    @relation("Referrals")
+
+  // Settings stored as JSON for flexibility
+  settings          Json      @default("{\"defaultSlippage\": 0.5, \"autoApprove\": false, \"notifications\": {\"tradeConfirmations\": true, \"priceAlerts\": true, \"portfolioUpdates\": true, \"newListings\": false}}")
+
+  // Enterprise-specific custom profit share (for enterprise tier only)
+  customProfitShare Decimal?  @db.Decimal(5, 2)
+
+  // Relationships
+  wallets           Wallet[]
+  apiKeys           ApiKey[]
+  positions         Position[]
+  swapTransactions  SwapTransaction[]
+  feeCollections    FeeCollection[]
+
+  // Referral relationships
+  referralsSent     Referral[]       @relation("Referrer")
+  referralReceived  Referral?        @relation("Referee")
+  referralPayouts   ReferralPayout[]
+
+  // Points program (pre-token)
+  points            UserPoints?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([telegramId])
+  @@index([referralCode])
+  @@index([tier])
+  @@map("users")
+}
+
+enum UserTier {
+  FREE       // 15% profit share
+  HOLDER     // 10% - holds 1,000 $HOPPER
+  STAKER     // 5%  - stakes 10,000 veHOPPER
+  ENTERPRISE // 2-5% - custom deal
+
+  @@map("user_tier")
+}
+
+// =============================================================================
+// USER STATISTICS (denormalized for fast dashboard queries)
+// =============================================================================
+
+model UserStats {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+
+  // Aggregate statistics
+  totalTrades     Int      @default(0)
+  totalVolumeUsd  Decimal  @default(0) @db.Decimal(20, 2)
+  totalProfitUsd  Decimal  @default(0) @db.Decimal(20, 2)
+  totalLossUsd    Decimal  @default(0) @db.Decimal(20, 2)
+  totalFeePaidUsd Decimal  @default(0) @db.Decimal(20, 2)
+  winRate         Decimal  @default(0) @db.Decimal(5, 2) // percentage
+
+  // Best/worst trade tracking
+  bestTradeId     String?
+  worstTradeId    String?
+
+  // Rolling windows for tier calculations
+  volume7d        Decimal  @default(0) @db.Decimal(20, 2)
+  volume30d       Decimal  @default(0) @db.Decimal(20, 2)
+
+  updatedAt       DateTime @updatedAt
+
+  @@index([totalVolumeUsd])
+  @@map("user_stats")
+}
+
+// =============================================================================
+// WALLETS
+// =============================================================================
+
+model Wallet {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  chainId   ChainId
+  address   String
+  label     String?
+  isDefault Boolean  @default(false)
+
+  // Positions and transactions from this wallet
+  positions         Position[]
+  swapTransactions  SwapTransaction[]
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, chainId, address])
+  @@index([userId])
+  @@index([chainId, address])
+  @@map("wallets")
+}
+
+enum ChainId {
+  TON
+  ETHEREUM
+  BASE
+  ARBITRUM
+  OPTIMISM
+  POLYGON
+  BSC
+  AVALANCHE
+  SONIC
+  KAIA
+  BERACHAIN
+  SUI
+  ECLIPSE
+  HYPERLIQUID
+  COSMOS
+
+  @@map("chain_id")
+}
+
+// =============================================================================
+// API KEYS
+// =============================================================================
+
+model ApiKey {
+  id          String          @id @default(cuid())
+  userId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name        String
+  keyHash     String          @unique // SHA-256 hash of the key
+  keyPrefix   String          // First 8 chars for identification (e.g., "chpr_abc...")
+
+  permissions ApiPermission[]
+  rateLimit   Int             @default(60) // requests per minute
+
+  lastUsedAt  DateTime?
+  expiresAt   DateTime?
+  isActive    Boolean         @default(true)
+
+  createdAt   DateTime        @default(now())
+
+  @@index([userId])
+  @@index([keyHash])
+  @@map("api_keys")
+}
+
+enum ApiPermission {
+  READ_PORTFOLIO
+  READ_QUOTES
+  WRITE_TRADES
+  WRITE_SETTINGS
+
+  @@map("api_permission")
+}
+
+// =============================================================================
+// TOKENS (cached token metadata)
+// =============================================================================
+
+model Token {
+  id               String    @id @default(cuid())
+
+  chainId          ChainId
+  address          String
+  symbol           String
+  name             String
+  decimals         Int
+  logoUri          String?
+
+  isNative         Boolean   @default(false)
+  isVerified       Boolean   @default(false)
+
+  // Rug detection
+  isRugPull        Boolean   @default(false)
+  rugScore         Int?      // 0-100, higher = more suspicious
+
+  // Metadata
+  description      String?
+  website          String?
+  twitter          String?
+  telegram         String?
+
+  // Supply info
+  totalSupply      Decimal?  @db.Decimal(78, 0) // uint256 max
+  circulatingSupply Decimal? @db.Decimal(78, 0)
+  holders          Int?
+
+  // Relationships
+  positionsIn      Position[]       @relation("TokenPositions")
+  swapsIn          SwapTransaction[] @relation("SwapTokenIn")
+  swapsOut         SwapTransaction[] @relation("SwapTokenOut")
+
+  tokenCreatedAt   DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@unique([chainId, address])
+  @@index([symbol])
+  @@index([chainId])
+  @@map("tokens")
+}
+
+// =============================================================================
+// TRADING - POSITIONS
+// =============================================================================
+
+model Position {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  walletId        String
+  wallet          Wallet    @relation(fields: [walletId], references: [id])
+
+  chainId         ChainId
+  tokenId         String
+  token           Token     @relation("TokenPositions", fields: [tokenId], references: [id])
+
+  // Entry transaction
+  entryTxId       String
+  entryTx         SwapTransaction @relation("EntryPosition", fields: [entryTxId], references: [id])
+
+  // Exit transaction (null if position still open)
+  exitTxId        String?   @unique
+  exitTx          SwapTransaction? @relation("ExitPosition", fields: [exitTxId], references: [id])
+
+  // Position details
+  amount          Decimal   @db.Decimal(78, 0) // token amount (uint256)
+  entryPrice      Decimal   @db.Decimal(30, 18) // price per token in USD
+  exitPrice       Decimal?  @db.Decimal(30, 18)
+
+  // Cost basis tracking (critical for profit-share model)
+  costBasis       Decimal   @db.Decimal(20, 2) // USD
+  currentValue    Decimal?  @db.Decimal(20, 2) // USD (updated periodically)
+
+  // P&L
+  unrealizedPnl   Decimal?  @db.Decimal(20, 2) // USD
+  realizedPnl     Decimal?  @db.Decimal(20, 2) // USD
+  realizedPnlPct  Decimal?  @db.Decimal(10, 4) // percentage
+
+  isOpen          Boolean   @default(true)
+
+  // Fee calculation when closed
+  feeCalculation  FeeCalculation?
+
+  openedAt        DateTime  @default(now())
+  closedAt        DateTime?
+
+  @@index([userId, isOpen])
+  @@index([chainId, tokenId])
+  @@index([openedAt])
+  @@map("positions")
+}
+
+// =============================================================================
+// TRADING - SWAP TRANSACTIONS
+// =============================================================================
+
+model SwapTransaction {
+  id              String      @id @default(cuid())
+  userId          String
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  walletId        String
+  wallet          Wallet      @relation(fields: [walletId], references: [id])
+
+  chainId         ChainId
+
+  // Tokens
+  tokenInId       String
+  tokenIn         Token       @relation("SwapTokenIn", fields: [tokenInId], references: [id])
+  tokenOutId      String
+  tokenOut        Token       @relation("SwapTokenOut", fields: [tokenOutId], references: [id])
+
+  // Amounts (stored as Decimal to handle uint256)
+  amountIn        Decimal     @db.Decimal(78, 0)
+  amountOut       Decimal     @db.Decimal(78, 0)
+  amountOutMin    Decimal     @db.Decimal(78, 0) // after slippage
+
+  // USD values at time of trade
+  amountInUsd     Decimal     @db.Decimal(20, 2)
+  amountOutUsd    Decimal     @db.Decimal(20, 2)
+
+  // Execution details
+  slippage        Decimal     @db.Decimal(5, 2) // percentage
+  priceImpact     Decimal?    @db.Decimal(10, 4) // percentage
+
+  // DEX routing
+  dexAggregator   DexAggregator
+  route           Json?       // SwapRoute[] stored as JSON
+
+  // Transaction
+  txHash          String?
+  status          SwapStatus  @default(PENDING)
+
+  // Gas
+  estimatedGas    Decimal?    @db.Decimal(78, 0)
+  actualGas       Decimal?    @db.Decimal(78, 0)
+  gasPrice        Decimal?    @db.Decimal(78, 0)
+
+  // Fees
+  protocolFee     Decimal     @default(0) @db.Decimal(78, 0)
+  protocolFeeUsd  Decimal     @default(0) @db.Decimal(20, 2)
+  networkFeeUsd   Decimal?    @db.Decimal(20, 2)
+
+  // Position relationships
+  entryPosition   Position?   @relation("EntryPosition")
+  exitPosition    Position?   @relation("ExitPosition")
+
+  // Quote reference
+  quoteId         String?
+
+  createdAt       DateTime    @default(now())
+  executedAt      DateTime?
+  confirmedAt     DateTime?
+
+  @@index([userId, status])
+  @@index([chainId, txHash])
+  @@index([createdAt])
+  @@map("swap_transactions")
+}
+
+enum SwapStatus {
+  PENDING
+  SUBMITTED
+  CONFIRMING
+  CONFIRMED
+  FAILED
+  EXPIRED
+
+  @@map("swap_status")
+}
+
+enum DexAggregator {
+  JUPITER     // Solana
+  ONE_INCH    // EVM
+  PARASWAP    // EVM
+  ZERO_X      // EVM
+  STONFI      // TON
+  DEDUST      // TON
+  CETUS       // Sui
+  TURBOS      // Sui
+
+  @@map("dex_aggregator")
+}
+
+// =============================================================================
+// FEES - PROFIT SHARE MODEL
+// =============================================================================
+
+model FeeCalculation {
+  id                  String    @id @default(cuid())
+
+  // Position that generated the fee
+  positionId          String    @unique
+  position            Position  @relation(fields: [positionId], references: [id])
+
+  userId              String
+  userTier            UserTier
+  chainId             ChainId
+
+  // Profit calculation
+  costBasis           Decimal   @db.Decimal(20, 2) // USD
+  exitValue           Decimal   @db.Decimal(20, 2) // USD
+  realizedProfit      Decimal   @db.Decimal(78, 0) // in token
+  realizedProfitUsd   Decimal   @db.Decimal(20, 2)
+
+  // Fee calculation
+  profitSharePct      Decimal   @db.Decimal(5, 2) // percentage applied
+  feeAmount           Decimal   @db.Decimal(78, 0) // in token
+  feeAmountUsd        Decimal   @db.Decimal(20, 2)
+
+  // Referral share (if user was referred)
+  referralId          String?
+  referral            Referral? @relation(fields: [referralId], references: [id])
+  referrerSharePct    Decimal?  @db.Decimal(5, 2)
+  referrerShare       Decimal?  @db.Decimal(78, 0)
+  referrerShareUsd    Decimal?  @db.Decimal(20, 2)
+
+  // Collection status
+  feeCollection       FeeCollection?
+
+  calculatedAt        DateTime  @default(now())
+
+  @@index([userId])
+  @@index([chainId])
+  @@index([calculatedAt])
+  @@map("fee_calculations")
+}
+
+model FeeCollection {
+  id                  String    @id @default(cuid())
+
+  feeCalculationId    String    @unique
+  feeCalculation      FeeCalculation @relation(fields: [feeCalculationId], references: [id])
+
+  userId              String
+  user                User      @relation(fields: [userId], references: [id])
+
+  chainId             ChainId
+  txHash              String
+  tokenAddress        String
+
+  amount              Decimal   @db.Decimal(78, 0)
+  amountUsd           Decimal   @db.Decimal(20, 2)
+
+  status              FeeCollectionStatus @default(PENDING)
+
+  collectedAt         DateTime?
+  createdAt           DateTime  @default(now())
+
+  @@index([userId])
+  @@index([chainId, txHash])
+  @@index([status])
+  @@map("fee_collections")
+}
+
+enum FeeCollectionStatus {
+  PENDING
+  COLLECTED
+  FAILED
+
+  @@map("fee_collection_status")
+}
+
+// =============================================================================
+// REFERRALS
+// =============================================================================
+
+model Referral {
+  id              String        @id @default(cuid())
+
+  // Referrer (the user who shared the code)
+  referrerId      String
+  referrer        User          @relation("Referrer", fields: [referrerId], references: [id])
+
+  // Referee (the user who used the code)
+  refereeId       String        @unique
+  referee         User          @relation("Referee", fields: [refereeId], references: [id])
+
+  code            String
+
+  // Tier based on referrer's weekly volume
+  tier            ReferralTier  @default(BRONZE)
+
+  // Tracking
+  totalVolume     Decimal       @default(0) @db.Decimal(20, 2) // referee's volume
+  totalEarnings   Decimal       @default(0) @db.Decimal(20, 2) // referrer's earnings
+
+  // Fee calculations where this referral earned commission
+  feeCalculations FeeCalculation[]
+  payouts         ReferralPayout[]
+
+  isActive        Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+
+  @@index([referrerId])
+  @@index([code])
+  @@map("referrals")
+}
+
+enum ReferralTier {
+  BRONZE   // <$10K weekly: 20% share, 5% discount
+  SILVER   // $10K-50K: 25% share, 7.5% discount
+  GOLD     // $50K-200K: 30% share, 10% discount
+  DIAMOND  // >$200K: 35% share, 10% discount
+
+  @@map("referral_tier")
+}
+
+model ReferralStats {
+  id                String       @id @default(cuid())
+  referrerId        String       @unique
+
+  code              String
+  currentTier       ReferralTier @default(BRONZE)
+
+  totalReferrals    Int          @default(0)
+  activeReferrals   Int          @default(0)
+
+  weeklyVolume      Decimal      @default(0) @db.Decimal(20, 2)
+  totalVolume       Decimal      @default(0) @db.Decimal(20, 2)
+
+  totalEarningsUsd  Decimal      @default(0) @db.Decimal(20, 2)
+  pendingEarningsUsd Decimal     @default(0) @db.Decimal(20, 2)
+
+  updatedAt         DateTime     @updatedAt
+
+  @@map("referral_stats")
+}
+
+model ReferralPayout {
+  id          String    @id @default(cuid())
+
+  referralId  String
+  referral    Referral  @relation(fields: [referralId], references: [id])
+
+  referrerId  String
+  referrer    User      @relation(fields: [referrerId], references: [id])
+
+  chainId     ChainId
+  txHash      String
+
+  amount      Decimal   @db.Decimal(78, 0)
+  amountUsd   Decimal   @db.Decimal(20, 2)
+
+  paidAt      DateTime  @default(now())
+
+  @@index([referrerId])
+  @@index([chainId, txHash])
+  @@map("referral_payouts")
+}
+
+// =============================================================================
+// POINTS PROGRAM (pre-token launch)
+// =============================================================================
+
+model UserPoints {
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  totalPoints   Decimal   @default(0) @db.Decimal(20, 2)
+
+  // Breakdown by activity
+  tradingPoints Decimal   @default(0) @db.Decimal(20, 2) // 1 point per $100 traded
+  referralPoints Decimal  @default(0) @db.Decimal(20, 2) // 5x for referrals
+  bonusPoints   Decimal   @default(0) @db.Decimal(20, 2) // early adopter, etc.
+
+  // Multipliers
+  multiChainMultiplier Decimal @default(1) @db.Decimal(3, 2) // 2x for multi-chain
+
+  // Tracking
+  lastTradeAt   DateTime?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([totalPoints])
+  @@map("user_points")
+}
+
+model PointsTransaction {
+  id          String         @id @default(cuid())
+  userId      String
+
+  type        PointsType
+  amount      Decimal        @db.Decimal(20, 2)
+  multiplier  Decimal        @default(1) @db.Decimal(3, 2)
+  finalAmount Decimal        @db.Decimal(20, 2)
+
+  // Reference to source
+  sourceType  String?        // 'trade', 'referral', 'bonus'
+  sourceId    String?
+
+  description String?
+
+  createdAt   DateTime       @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("points_transactions")
+}
+
+enum PointsType {
+  TRADING         // 1 point per $100
+  REFERRAL        // 5x multiplier
+  MULTI_CHAIN     // 2x multiplier
+  EARLY_ADOPTER   // bonus
+  PROMOTIONAL     // campaigns
+
+  @@map("points_type")
+}
+
+// =============================================================================
+// PROTOCOL ANALYTICS (aggregated data)
+// =============================================================================
+
+model ProtocolRevenue {
+  id                    String    @id @default(cuid())
+
+  period                RevenuePeriod
+  startDate             DateTime
+  endDate               DateTime
+
+  totalFeesCollectedUsd Decimal   @db.Decimal(20, 2)
+  totalReferralPaidUsd  Decimal   @db.Decimal(20, 2)
+  netRevenueUsd         Decimal   @db.Decimal(20, 2)
+
+  totalVolume           Decimal   @db.Decimal(20, 2)
+  totalTrades           Int
+  uniqueUsers           Int
+
+  // Breakdown by chain (JSON for flexibility)
+  byChain               Json      // Record<ChainId, number>
+  byTier                Json      // Record<UserTier, number>
+
+  createdAt             DateTime  @default(now())
+
+  @@unique([period, startDate])
+  @@index([startDate])
+  @@map("protocol_revenue")
+}
+
+enum RevenuePeriod {
+  DAILY
+  WEEKLY
+  MONTHLY
+
+  @@map("revenue_period")
+}
+
+// =============================================================================
+// CHAIN HEALTH & CONFIG
+// =============================================================================
+
+model ChainConfig {
+  id                  String    @id @default(cuid())
+
+  chainId             ChainId   @unique
+  name                String
+  type                ChainType
+
+  // Native currency
+  nativeCurrencyName  String
+  nativeCurrencySymbol String
+  nativeCurrencyDecimals Int
+
+  // RPC endpoints (stored as JSON array)
+  rpcUrls             Json      // string[]
+  blockExplorerUrls   Json      // string[]
+
+  // Contract addresses
+  feeCollectorAddress    String?
+  swapRouterAddress      String?
+  referralRegistryAddress String?
+
+  isTestnet           Boolean   @default(false)
+  isEnabled           Boolean   @default(true)
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@map("chain_configs")
+}
+
+enum ChainType {
+  EVM
+  TON
+  SUI
+  COSMOS
+  SVM
+
+  @@map("chain_type")
+}
+
+model ChainStatus {
+  id          String    @id @default(cuid())
+
+  chainId     ChainId   @unique
+  isHealthy   Boolean   @default(true)
+  blockNumber Decimal   @db.Decimal(78, 0)
+  latency     Int       // ms
+
+  lastError   String?
+
+  lastUpdated DateTime  @default(now())
+
+  @@map("chain_status")
+}
+
+// =============================================================================
+// PRICE CACHE
+// =============================================================================
+
+model PriceCache {
+  id            String      @id @default(cuid())
+
+  chainId       ChainId
+  tokenAddress  String
+
+  priceUsd      Decimal     @db.Decimal(30, 18)
+  priceChange24h Decimal?   @db.Decimal(10, 4)
+  volume24h     Decimal?    @db.Decimal(20, 2)
+  marketCap     Decimal?    @db.Decimal(20, 2)
+
+  source        PriceSource
+
+  updatedAt     DateTime    @default(now())
+
+  @@unique([chainId, tokenAddress])
+  @@index([updatedAt])
+  @@map("price_cache")
+}
+
+enum PriceSource {
+  COINGECKO
+  COINMARKETCAP
+  DEXSCREENER
+  CHAINLINK
+  PYTH
+  DEX
+
+  @@map("price_source")
+}
