@@ -1,0 +1,128 @@
+# ChainHopper CI Pipeline
+# Tests, lint, type-check - NO Claude API calls (uses Max subscription locally)
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+        continue-on-error: true  # Will fail until package.json exists
+
+      - name: Run ESLint
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Check formatting
+        run: npm run format:check
+        continue-on-error: true
+
+  typecheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+        continue-on-error: true
+
+      - name: Type check
+        run: npm run typecheck
+        continue-on-error: true
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+        continue-on-error: true
+
+      - name: Run tests
+        run: npm test
+        continue-on-error: true
+
+  contracts:
+    name: Smart Contract Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        continue-on-error: true
+
+      - name: Run Forge tests
+        run: |
+          if [ -d "packages/contracts" ]; then
+            cd packages/contracts
+            forge test
+          else
+            echo "No contracts directory yet"
+          fi
+        continue-on-error: true
+
+      - name: Run Slither (static analysis)
+        uses: crytic/slither-action@v0.3.0
+        continue-on-error: true
+        with:
+          target: 'packages/contracts/'
+          fail-on: 'none'  # Don't fail CI, just report
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Check for secrets
+        uses: trufflesecurity/trufflehog@main
+        with:
+          extra_args: --only-verified
+        continue-on-error: true

@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Cache
+.turbo/
+.cache/
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Testing
+coverage/
+.nyc_output/
+
+# Smart contracts
+packages/contracts/cache/
+packages/contracts/out/
+packages/contracts/broadcast/
+
+# Misc
+*.pem
+*.key

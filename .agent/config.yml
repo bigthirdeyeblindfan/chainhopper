@@ -1,0 +1,70 @@
+# ChainHopper Agent Configuration
+# Design: Claude Code Max primary, swappable providers for future flexibility
+
+default_provider: claude-code
+
+providers:
+  claude-code:
+    type: cli
+    command: claude
+    # No API key needed - uses Max subscription
+
+  anthropic-api:
+    type: api
+    endpoint: https://api.anthropic.com/v1/messages
+    key_env: ANTHROPIC_API_KEY
+    models:
+      fast: claude-haiku-4-5-20251001
+      default: claude-sonnet-4-5-20250929
+      powerful: claude-opus-4-5-20251101
+
+  openai:
+    type: api
+    endpoint: https://api.openai.com/v1/chat/completions
+    key_env: OPENAI_API_KEY
+    models:
+      fast: gpt-4o-mini
+      default: gpt-4o
+
+  ollama:
+    type: local
+    endpoint: http://localhost:11434
+    models:
+      default: llama3:70b
+      fast: llama3:8b
+
+  cerebras:
+    type: api
+    endpoint: https://api.cerebras.ai/v1/chat/completions
+    key_env: CEREBRAS_API_KEY
+    models:
+      default: llama3.1-70b
+
+# Task routing
+routing:
+  implement: claude-code          # Heavy lifting - Max sub
+  review:
+    default: claude-code          # Local review
+    ci: anthropic-api             # When running in Actions (future)
+  security-review: anthropic-api  # Audit trail for sensitive code
+
+# Validation tiers (all Claude models, no external APIs)
+validation:
+  fast_scan:
+    model: haiku
+    trigger: every_pr
+  deep_review:
+    model: sonnet
+    trigger: pr_over_100_lines
+  security_review:
+    model: sonnet
+    trigger: security_label_or_sensitive_path
+
+# Sensitive paths that trigger deeper review
+sensitive_paths:
+  - "**/auth/**"
+  - "**/payments/**"
+  - "**/contracts/**"
+  - "**/crypto/**"
+  - "**/*secret*"
+  - "**/*key*"
