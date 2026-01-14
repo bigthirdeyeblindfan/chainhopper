@@ -26,8 +26,6 @@ If a checkout is >2 hours old with no commits, you may take it over.
 
 | Task ID | Agent | Checkout Time | Expires |
 |---------|-------|---------------|---------|
-| I-001 | agent-api | 2025-01-14 | 2hrs |
-| S-002 | agent-d | 2025-01-14 | 2hrs |
 
 ---
 
@@ -55,11 +53,11 @@ If a checkout is >2 hours old with no commits, you may take it over.
 
 | ID | Task | Dependencies | Status | Notes |
 |----|------|--------------|--------|-------|
-| I-001 | REST API Core | F-003 | IN_PROGRESS | Hono + endpoints |
+| I-001 | REST API Core | F-003 | DONE | Auth, Trading, Portfolio, User routes |
 | I-002 | Telegram Bot Core | F-003 | DONE | apps/bot complete |
 | I-003 | Web Panel Setup | F-003 | DONE | Portfolio, Analytics, Settings, Trade pages |
-| I-004 | WebSocket Server | I-001 | TODO | Real-time updates |
-| I-005 | API Documentation | I-001 | TODO | OpenAPI spec |
+| I-004 | WebSocket Server | I-001 | DONE | ws module: prices, trades, portfolio events |
+| I-005 | API Documentation | I-001 | DONE | OpenAPI spec + auth routes complete |
 
 ---
 
@@ -68,8 +66,8 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | ID | Task | Dependencies | Status | Notes |
 |----|------|--------------|--------|-------|
 | S-001 | FeeCollector Contract | None | DONE | FeeCollector.sol + tests complete |
-| S-002 | SwapRouter Contract | S-001 | IN_PROGRESS | Swap interface |
-| S-003 | ReferralRegistry Contract | S-001 | TODO | Referral tracking |
+| S-002 | SwapRouter Contract | S-001 | DONE | SwapRouter.sol + interfaces + tests |
+| S-003 | ReferralRegistry Contract | S-001 | DONE | ReferralRegistry.sol + interface + tests |
 | S-004 | Contract Deploy Scripts | S-001,S-002,S-003 | TODO | Foundry scripts |
 | S-005 | TON Contract (FunC) | None | DONE | FunC + Tact implementations complete |
 
