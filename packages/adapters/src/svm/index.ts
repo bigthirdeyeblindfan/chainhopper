@@ -417,8 +417,14 @@ export class EclipseAdapter implements SvmAdapter {
   isValidAddress(address: string): boolean {
     if (address === 'native') return true;
     try {
-      new PublicKey(address);
-      return true;
+      // Solana addresses are base58-encoded 32-byte public keys
+      // Valid base58 addresses are 32-44 characters long
+      if (address.length < 32 || address.length > 44) {
+        return false;
+      }
+      // Must be valid base58 and decode to exactly 32 bytes
+      const pubkey = new PublicKey(address);
+      return pubkey.toBytes().length === 32;
     } catch {
       return false;
     }

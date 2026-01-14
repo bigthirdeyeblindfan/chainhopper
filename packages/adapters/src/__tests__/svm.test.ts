@@ -59,10 +59,19 @@ vi.mock('@solana/web3.js', () => ({
       lastValidBlockHeight: 1000,
     }),
   })),
-  PublicKey: vi.fn().mockImplementation((key) => ({
-    toBase58: () => key,
-    toString: () => key,
-  })),
+  PublicKey: vi.fn().mockImplementation((key) => {
+    // Validate like real PublicKey - must be valid base58 and 32-44 chars
+    const isValidBase58 = /^[1-9A-HJ-NP-Za-km-z]+$/.test(key);
+    const isValidLength = key.length >= 32 && key.length <= 44;
+    if (!isValidBase58 || !isValidLength) {
+      throw new Error('Invalid public key input');
+    }
+    return {
+      toBase58: () => key,
+      toString: () => key,
+      toBytes: () => new Uint8Array(32),
+    };
+  }),
   Transaction: vi.fn().mockImplementation(() => ({})),
   VersionedTransaction: {
     deserialize: vi.fn().mockReturnValue({}),

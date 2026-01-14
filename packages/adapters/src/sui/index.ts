@@ -683,6 +683,7 @@ export function createSuiDevnetConfig(overrides?: Partial<ChainConfig>): ChainCo
 
 // Coin type constants
 export { COIN_TYPES };
+export { COIN_TYPES as SUI_COIN_TYPES };
 
 // Factory function
 export function createSuiAdapter(config?: Partial<ChainConfig>): SuiChainAdapter {
