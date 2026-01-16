@@ -26,8 +26,9 @@ If a checkout is >2 hours old with no commits, you may take it over.
 
 | Task ID | Agent | Checkout Time | Expires |
 |---------|-------|---------------|---------|
-| CHAIN-146 | claude-opus | 2026-01-16 14:45 | 2hrs |
-| CHAIN-147 | claude-opus | 2026-01-16 14:45 | 2hrs |
+| CHAIN-148 | claude-opus-4.5 | 2026-01-16 17:52 | 2hrs |
+| CHAIN-150 | claude-opus-4.5 | 2026-01-16 17:55 | 2hrs |
+| CHAIN-151 | claude-opus-4.5 | 2026-01-16 18:30 | 2hrs |
 
 ---
 
@@ -149,7 +150,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | CHAIN-132 | Blast Integration | CHAIN-101 | DONE | Chain 81457, Thruster V2/V3 + BladeSwap DEX |
 | CHAIN-133 | Mantle Integration | CHAIN-101 | DONE | Chain 5000, ~$1B TVL, Merchant Moe/Agni/FusionX DEX |
 | CHAIN-134 | Manta Pacific Integration | CHAIN-101 | DONE | Chain 169, ApertureSwap/QuickSwap DEX |
-| CHAIN-135 | Mode Integration | CHAIN-101 | TODO | Chain 34443, Velodrome DEX |
+| CHAIN-135 | Mode Integration | CHAIN-101 | DONE | Chain 34443, SwapMode V2/V3 + Kim Exchange DEX |
 | CHAIN-136 | Hyperliquid Integration | CHAIN-101 | DONE | Chain 999, HyperEVM Spot/Perps DEX |
 | CHAIN-137 | Gnosis Integration | CHAIN-101 | DONE | Chain 100, Balancer/CoW/Curve/SushiSwap DEX |
 | CHAIN-138 | Fantom Integration | CHAIN-101 | DONE | Chain 250, SpookySwap/SpiritSwap/BeethovenX DEX |
@@ -164,16 +165,16 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | CHAIN-143 | Zora Integration | CHAIN-101 | DONE | Chain 7777777, Uniswap V3 DEX |
 | CHAIN-144 | Fraxtal Integration | CHAIN-101 | DONE | Chain 252, Fraxswap/Ra Exchange DEX |
 | CHAIN-145 | World Chain Integration | CHAIN-101 | DONE | Chain 480, Uniswap V3/WorldSwap DEX |
-| CHAIN-146 | Celo Integration | CHAIN-101 | TODO | Chain 42220, Ubeswap DEX |
-| CHAIN-147 | Cronos Integration | CHAIN-101 | TODO | Chain 25, VVS Finance DEX |
-| CHAIN-148 | BOB Integration | CHAIN-101 | TODO | Chain 60808, BTC-ETH bridge |
+| CHAIN-146 | Celo Integration | CHAIN-101 | DONE | Chain 42220, Ubeswap V2/V3 DEX |
+| CHAIN-147 | Cronos Integration | CHAIN-101 | DONE | Chain 25, VVS/MM Finance/Crodex DEX |
+| CHAIN-148 | BOB Integration | CHAIN-101 | IN_PROGRESS | Chain 60808, BTC-ETH bridge |
 
 ### 7E: Tier 1C - Emerging Chains (8)
 
 | ID | Task | Dependencies | Status | Notes |
 |----|------|--------------|--------|-------|
-| CHAIN-150 | Cyber Integration | CHAIN-101 | TODO | Chain 7560, Social/Creator |
-| CHAIN-151 | Lisk Integration | CHAIN-101 | TODO | Chain 1135, Enterprise |
+| CHAIN-150 | Cyber Integration | CHAIN-101 | IN_PROGRESS | Chain 7560, Social/Creator |
+| CHAIN-151 | Lisk Integration | CHAIN-101 | IN_PROGRESS | Chain 1135, Enterprise |
 | CHAIN-152 | Mint Integration | CHAIN-101 | TODO | Chain 185, NFT focused |
 | CHAIN-153 | Redstone Integration | CHAIN-101 | TODO | Chain 690, Gaming (MUD) |
 | CHAIN-154 | Derive Integration | CHAIN-101 | TODO | Chain 957, Derive Protocol DEX |
