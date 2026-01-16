@@ -1137,6 +1137,29 @@ export {
   type MoonriverQuote,
 } from './moonriver.js';
 
+// Export Moonbeam utilities
+export {
+  MOONBEAM_CHAIN_ID,
+  MOONBEAM_ROUTERS,
+  MOONBEAM_FACTORIES,
+  MOONBEAM_TOKENS,
+  STELLASWAP_V2_ROUTER_ABI,
+  STELLASWAP_V3_ROUTER_ABI,
+  BEAMSWAP_ROUTER_ABI,
+  getStellaSwapV2Quote,
+  getStellaSwapV3Quote,
+  getBeamSwapQuote,
+  getMoonbeamBestQuote,
+  buildMoonbeamSwapTransaction,
+  getMoonbeamDexes,
+  isMoonbeamChain,
+  getMoonbeamChainId,
+  isNativeGLMR,
+  getWrappedGLMR,
+  getMoonbeamPopularPairs,
+  type MoonbeamQuote,
+} from './moonbeam.js';
+
 // Export Lisk utilities
 export {
   LISK_CHAIN_ID,
@@ -1173,6 +1196,25 @@ export {
   getRedstonePopularPairs,
   type RedstoneQuote,
 } from './redstone.js';
+
+// Export Derive utilities
+export {
+  DERIVE_CHAIN_ID,
+  DERIVE_ROUTERS,
+  DERIVE_FACTORIES,
+  DERIVE_TOKENS,
+  DERIVE_ROUTER_ABI,
+  DERIVE_VELODROME_ROUTER_ABI,
+  getDeriveProtocolQuote,
+  getVelodromeDeriveQuote,
+  getDeriveBestQuote,
+  buildDeriveSwapTransaction,
+  getDeriveDexes,
+  isDeriveChain,
+  getDeriveChainId,
+  getDerivePopularPairs,
+  type DeriveQuote,
+} from './derive.js';
 
 // Factory function to create adapter for a chain
 export function createEvmAdapter(

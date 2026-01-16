@@ -7,6 +7,7 @@ import { getZeroGBestQuote, isZeroGChain } from './zerog.js';
 import { getAstarBestQuote, isAstarChain } from './astar.js';
 import { getStableBestQuote, isStableChain } from './stable.js';
 import { getLiskBestQuote, isLiskChain } from './lisk.js';
+import { getDeriveBestQuote, isDeriveChain } from './derive.js';
 
 // Aggregator API endpoints
 const AGGREGATOR_APIS = {
@@ -67,6 +68,7 @@ const NATIVE_DEX_CHAINS: EvmChainId[] = [
   'moonbeam',   // StellaSwap
   'moonriver',  // Solarbeam
   'lisk',       // Velodrome, Oku Trade
+  'derive',     // Derive Protocol, Velodrome
 ];
 
 export interface AggregatorQuote {
@@ -433,6 +435,24 @@ export async function getBestQuote(
         txData: liskQuote.txData,
         txTo: liskQuote.txTo,
         txValue: liskQuote.txValue,
+      };
+    }
+    return null;
+  }
+
+  // Route Derive chain to native DEX (Derive Protocol, Velodrome)
+  if (isDeriveChain(request.chainId)) {
+    const deriveQuote = await getDeriveBestQuote(request);
+    if (deriveQuote) {
+      return {
+        aggregator: deriveQuote.aggregator,
+        amountOut: deriveQuote.amountOut,
+        estimatedGas: deriveQuote.estimatedGas,
+        priceImpact: deriveQuote.priceImpact,
+        route: deriveQuote.route,
+        txData: deriveQuote.txData,
+        txTo: deriveQuote.txTo,
+        txValue: deriveQuote.txValue,
       };
     }
     return null;
