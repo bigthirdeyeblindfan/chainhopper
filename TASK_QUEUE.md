@@ -27,6 +27,8 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | Task ID | Agent | Checkout Time | Expires |
 |---------|-------|---------------|---------|
 | CHAIN-130 | claude-opus | 2026-01-16 14:10 | 2hrs |
+| CHAIN-131 | claude-opus-4.5 | 2026-01-16 14:15 | 2hrs |
+| CHAIN-132 | claude-opus | 2026-01-16 14:20 | 2hrs |
 
 ---
 
@@ -136,7 +138,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | CHAIN-116 | 0G Integration | CHAIN-101 | DONE | Chain 16600, 0GSwap/Gravity DEX |
 | CHAIN-117 | Astar Integration | CHAIN-101 | DONE | Chain 592, ArthSwap/Sirius DEX |
 | CHAIN-118 | ApeChain Integration | CHAIN-101 | DONE | Chain 33139, Ape Portal/Camelot DEX |
-| CHAIN-119 | Ronin Integration | CHAIN-101 | TODO | Chain 2020, Katana DEX |
+| CHAIN-119 | Ronin Integration | CHAIN-101 | DONE | Chain 2020, Katana V2/V3 DEX |
 | CHAIN-120 | Stable Integration | CHAIN-101 | DONE | Chain 988, USDT native gas, StableSwap DEX |
 
 ### 7C: Tier 1A - High TVL Chains (9)
@@ -144,7 +146,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | ID | Task | Dependencies | Status | Notes |
 |----|------|--------------|--------|-------|
 | CHAIN-130 | Linea Integration | CHAIN-101 | TODO | Chain 59144, ~$963M TVL, Lynex DEX |
-| CHAIN-131 | zkSync Era Integration | CHAIN-101 | TODO | Chain 324, ~$569M TVL, SyncSwap DEX |
+| CHAIN-131 | zkSync Era Integration | CHAIN-101 | IN_PROGRESS | Chain 324, ~$569M TVL, SyncSwap DEX |
 | CHAIN-132 | Blast Integration | CHAIN-101 | TODO | Chain 238, Thruster DEX |
 | CHAIN-133 | Mantle Integration | CHAIN-101 | TODO | Chain 5000, ~$1B TVL, Merchant Moe DEX |
 | CHAIN-134 | Manta Pacific Integration | CHAIN-101 | TODO | Chain 169, OP Stack |

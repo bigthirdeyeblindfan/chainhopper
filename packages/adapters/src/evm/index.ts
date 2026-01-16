@@ -764,6 +764,25 @@ export {
   type StableQuote,
 } from './stable.js';
 
+// Export Linea utilities
+export {
+  LINEA_CHAIN_ID,
+  LINEA_ROUTERS,
+  LINEA_FACTORIES,
+  LINEA_TOKENS,
+  LYNEX_ROUTER_ABI,
+  LINEA_SYNCSWAP_ROUTER_ABI,
+  getLynexQuote,
+  getSyncSwapLineaQuote,
+  getLineaBestQuote,
+  buildLineaSwapTransaction,
+  getLineaDexes,
+  isLineaChain,
+  getLineaChainId,
+  getLineaPopularPairs,
+  type LineaQuote,
+} from './linea.js';
+
 // Factory function to create adapter for a chain
 export function createEvmAdapter(
   chainId: EvmChainId,
