@@ -583,6 +583,41 @@ export {
   type AbstractQuote,
 } from './abstract.js';
 
+// Export Monad utilities
+export {
+  MONAD_CONTRACTS,
+  MONAD_TOKENS,
+  getKuruFlowQuote,
+  getKuruOrderbookQuote,
+  getMonadUniswapQuote,
+  getMonadBestQuote,
+  buildMonadSwapTransaction,
+  getMonadDexes,
+  isMonadChain,
+  getMonadChainId,
+  getMonadPopularPairs,
+  type MonadQuote,
+} from './monad.js';
+
+// Export Scroll utilities
+export {
+  SCROLL_CHAIN_ID,
+  SCROLL_ROUTERS,
+  SCROLL_FACTORIES,
+  SCROLL_TOKENS,
+  SYNCSWAP_ROUTER_ABI,
+  AMBIENT_ROUTER_ABI,
+  getSyncSwapQuote,
+  getAmbientQuote,
+  getScrollBestQuote,
+  buildScrollSwapTransaction,
+  getScrollDexes,
+  isScrollChain,
+  getScrollChainId,
+  getScrollPopularPairs,
+  type ScrollQuote,
+} from './scroll.js';
+
 // Factory function to create adapter for a chain
 export function createEvmAdapter(
   chainId: EvmChainId,

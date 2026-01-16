@@ -129,7 +129,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 |----|------|--------------|--------|-------|
 | CHAIN-110 | Monad Integration | CHAIN-101 | TODO | Chain 143, Kuru Exchange DEX |
 | CHAIN-111 | Abstract Integration | CHAIN-101 | DONE | Chain 2741, AbstractSwap DEX |
-| CHAIN-112 | Scroll Integration | CHAIN-101 | TODO | Chain 534352, zkEVM |
+| CHAIN-112 | Scroll Integration | CHAIN-101 | DONE | Chain 534352, SyncSwap/Ambient DEX |
 | CHAIN-113 | Soneium Integration | CHAIN-101 | TODO | Chain 1868, Kyo Finance DEX |
 | CHAIN-114 | XLayer Integration | CHAIN-101 | TODO | Chain 196, OKB gas token |
 | CHAIN-115 | Ink Integration | CHAIN-101 | TODO | Chain 57073, Velodrome/Nado DEX |

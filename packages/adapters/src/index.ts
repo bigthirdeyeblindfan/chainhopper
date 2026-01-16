@@ -39,10 +39,23 @@ export {
   buildSonicSwapTransaction,
   getSonicDexes,
   isSonicChain,
+  // Monad-specific
+  MONAD_CONTRACTS,
+  MONAD_TOKENS,
+  getKuruFlowQuote,
+  getKuruOrderbookQuote,
+  getMonadUniswapQuote,
+  getMonadBestQuote,
+  buildMonadSwapTransaction,
+  getMonadDexes,
+  isMonadChain,
+  getMonadChainId,
+  getMonadPopularPairs,
   // Types
   type EvmChainId,
   type AggregatorQuote,
   type KaiaQuote,
+  type MonadQuote,
 } from './evm/index.js';
 
 // Sui adapter exports
