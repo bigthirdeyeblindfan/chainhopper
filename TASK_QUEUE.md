@@ -27,7 +27,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | Task ID | Agent | Checkout Time | Expires |
 |---------|-------|---------------|---------|
 | CHAIN-148 | claude-opus-4.5 | 2026-01-16 17:52 | 2hrs |
-| CHAIN-153 | claude-opus-4.5 | 2026-01-16 18:35 | 2hrs |
+| CHAIN-154 | claude-opus-4.5 | 2026-01-16 18:50 | 2hrs |
 | CHAIN-155 | claude-opus-4.5 | 2026-01-16 18:45 | 2hrs |
 
 ---
@@ -176,8 +176,8 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | CHAIN-150 | Cyber Integration | CHAIN-101 | DONE | Chain 7560, CyberSwap/Velodrome DEX |
 | CHAIN-151 | Lisk Integration | CHAIN-101 | DONE | Chain 1135, Velodrome/Oku DEX |
 | CHAIN-152 | Mint Integration | CHAIN-101 | TODO | Chain 185, NFT focused |
-| CHAIN-153 | Redstone Integration | CHAIN-101 | IN_PROGRESS | Chain 690, Gaming (MUD) |
-| CHAIN-154 | Derive Integration | CHAIN-101 | TODO | Chain 957, Derive Protocol DEX |
+| CHAIN-153 | Redstone Integration | CHAIN-101 | DONE | Chain 690, GarnetSwap/MUD Swap DEX |
+| CHAIN-154 | Derive Integration | CHAIN-101 | IN_PROGRESS | Chain 957, Derive Protocol DEX |
 | CHAIN-155 | Moonbeam Integration | CHAIN-101 | TODO | Chain 1284, StellaSwap DEX |
 | CHAIN-156 | Moonriver Integration | CHAIN-101 | DONE | Chain 1285, Solarbeam/Huckleberry/Zenlink DEX |
 | CHAIN-157 | Starknet Integration | F-004 | TODO | Non-EVM (Cairo), Ekubo/Paradex DEX |
