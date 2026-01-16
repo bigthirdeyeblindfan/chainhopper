@@ -654,6 +654,61 @@ export {
   type ZeroGQuote,
 } from './zerog.js';
 
+// Export ApeChain utilities
+export {
+  APECHAIN_CHAIN_ID,
+  APECHAIN_ROUTERS,
+  APECHAIN_FACTORIES,
+  APECHAIN_TOKENS,
+  APE_PORTAL_ROUTER_ABI,
+  getApePortalQuote,
+  getCamelotApeChainQuote,
+  getApeChainBestQuote,
+  buildApeChainSwapTransaction,
+  getApeChainDexes,
+  isApeChain,
+  getApeChainId,
+  getApeChainPopularPairs,
+  type ApeChainQuote,
+} from './apechain.js';
+
+// Export Astar utilities
+export {
+  ASTAR_CHAIN_ID,
+  ASTAR_ROUTERS,
+  ASTAR_FACTORIES,
+  ASTAR_TOKENS,
+  ARTHSWAP_ROUTER_ABI,
+  SIRIUS_ROUTER_ABI,
+  getArthSwapQuote,
+  getSiriusQuote,
+  getAstarBestQuote,
+  buildAstarSwapTransaction,
+  getAstarDexes,
+  isAstarChain,
+  getAstarChainId,
+  getAstarPopularPairs,
+  type AstarQuote,
+} from './astar.js';
+
+// Export Ink utilities
+export {
+  INK_CHAIN_ID,
+  INK_ROUTERS,
+  INK_TOKENS,
+  VELODROME_ROUTER_ABI,
+  NADO_ROUTER_ABI,
+  getVelodromeQuote,
+  getNadoQuote,
+  getInkBestQuote,
+  buildInkSwapTransaction,
+  getInkDexes,
+  isInkChain,
+  getInkChainId,
+  getInkPopularPairs,
+  type InkQuote,
+} from './ink.js';
+
 // Factory function to create adapter for a chain
 export function createEvmAdapter(
   chainId: EvmChainId,

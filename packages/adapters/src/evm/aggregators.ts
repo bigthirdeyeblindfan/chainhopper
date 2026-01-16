@@ -4,6 +4,7 @@ import { getSonicBestQuote, isSonicChain } from './sonic.js';
 import { getKaiaBestQuote } from './kaia.js';
 import { getAbstractBestQuote, isAbstractChain } from './abstract.js';
 import { getZeroGBestQuote, isZeroGChain } from './zerog.js';
+import { getAstarBestQuote, isAstarChain } from './astar.js';
 
 // Aggregator API endpoints
 const AGGREGATOR_APIS = {
@@ -51,6 +52,7 @@ const NATIVE_DEX_CHAINS: EvmChainId[] = [
   'kaia',       // DragonSwap, KLAYswap
   'abstract',   // AbstractSwap
   'zerog',      // 0GSwap, Gravity DEX
+  'astar',      // ArthSwap, SiriusFinance
   'ronin',      // Katana DEX
   'apechain',   // Ape Portal / Camelot
   'monad',      // Kuru Exchange
@@ -373,6 +375,24 @@ export async function getBestQuote(
         txData: zerogQuote.txData,
         txTo: zerogQuote.txTo,
         txValue: zerogQuote.txValue,
+      };
+    }
+    return null;
+  }
+
+  // Route Astar chain to native DEX (ArthSwap, SiriusFinance)
+  if (isAstarChain(request.chainId)) {
+    const astarQuote = await getAstarBestQuote(request);
+    if (astarQuote) {
+      return {
+        aggregator: astarQuote.aggregator,
+        amountOut: astarQuote.amountOut,
+        estimatedGas: astarQuote.estimatedGas,
+        priceImpact: astarQuote.priceImpact,
+        route: astarQuote.route,
+        txData: astarQuote.txData,
+        txTo: astarQuote.txTo,
+        txValue: astarQuote.txValue,
       };
     }
     return null;
