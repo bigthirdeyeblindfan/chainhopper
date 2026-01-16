@@ -26,6 +26,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 
 | Task ID | Agent | Checkout Time | Expires |
 |---------|-------|---------------|---------|
+| CHAIN-100 | claude | 2026-01-16 17:00 | 2hrs |
 
 ---
 
