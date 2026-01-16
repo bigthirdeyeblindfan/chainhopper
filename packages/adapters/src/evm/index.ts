@@ -568,6 +568,21 @@ export {
   isSonicChain,
 } from './sonic.js';
 
+// Export Abstract utilities
+export {
+  ABSTRACT_CHAIN_ID,
+  ABSTRACT_ROUTERS,
+  ABSTRACT_TOKENS,
+  ABSTRACTSWAP_ROUTER_ABI,
+  getAbstractSwapQuote,
+  getAbstractBestQuote,
+  buildAbstractSwapTransaction,
+  getAbstractDexes,
+  isAbstractChain,
+  getAbstractPopularPairs,
+  type AbstractQuote,
+} from './abstract.js';
+
 // Factory function to create adapter for a chain
 export function createEvmAdapter(
   chainId: EvmChainId,

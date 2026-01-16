@@ -26,6 +26,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 
 | Task ID | Agent | Checkout Time | Expires |
 |---------|-------|---------------|---------|
+| CHAIN-110 | claude-opus | 2026-01-16 17:25 | 2hrs |
 
 ---
 
@@ -127,7 +128,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | ID | Task | Dependencies | Status | Notes |
 |----|------|--------------|--------|-------|
 | CHAIN-110 | Monad Integration | CHAIN-101 | TODO | Chain 143, Kuru Exchange DEX |
-| CHAIN-111 | Abstract Integration | CHAIN-101 | TODO | Chain 2741, L2 zkSync |
+| CHAIN-111 | Abstract Integration | CHAIN-101 | DONE | Chain 2741, AbstractSwap DEX |
 | CHAIN-112 | Scroll Integration | CHAIN-101 | TODO | Chain 534352, zkEVM |
 | CHAIN-113 | Soneium Integration | CHAIN-101 | TODO | Chain 1868, Kyo Finance DEX |
 | CHAIN-114 | XLayer Integration | CHAIN-101 | TODO | Chain 196, OKB gas token |

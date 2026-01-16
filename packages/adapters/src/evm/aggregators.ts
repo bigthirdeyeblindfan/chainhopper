@@ -2,6 +2,7 @@ import type { SwapRequest, SwapRoute, DexAggregator } from '@chainhopper/types';
 import { EVM_CHAIN_IDS, type EvmChainId } from './chains.js';
 import { getSonicBestQuote, isSonicChain } from './sonic.js';
 import { getKaiaBestQuote } from './kaia.js';
+import { getAbstractBestQuote, isAbstractChain } from './abstract.js';
 
 // Aggregator API endpoints
 const AGGREGATOR_APIS = {
@@ -47,6 +48,7 @@ const AGGREGATOR_CHAIN_SUPPORT: Record<DexAggregator, EvmChainId[]> = {
 const NATIVE_DEX_CHAINS: EvmChainId[] = [
   'sonic',      // SwapX, Shadow DEX
   'kaia',       // DragonSwap, KLAYswap
+  'abstract',   // AbstractSwap
   'ronin',      // Katana DEX
   'apechain',   // Ape Portal / Camelot
   'monad',      // Kuru Exchange
@@ -333,6 +335,24 @@ export async function getBestQuote(
         txData: kaiaQuote.txData,
         txTo: kaiaQuote.txTo,
         txValue: kaiaQuote.txValue,
+      };
+    }
+    return null;
+  }
+
+  // Route Abstract chain to native DEX (AbstractSwap)
+  if (isAbstractChain(request.chainId)) {
+    const abstractQuote = await getAbstractBestQuote(request);
+    if (abstractQuote) {
+      return {
+        aggregator: abstractQuote.aggregator,
+        amountOut: abstractQuote.amountOut,
+        estimatedGas: abstractQuote.estimatedGas,
+        priceImpact: abstractQuote.priceImpact,
+        route: abstractQuote.route,
+        txData: abstractQuote.txData,
+        txTo: abstractQuote.txTo,
+        txValue: abstractQuote.txValue,
       };
     }
     return null;
