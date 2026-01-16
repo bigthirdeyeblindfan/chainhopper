@@ -524,8 +524,11 @@ export {
   EVM_CHAIN_IDS,
   EVM_CHAIN_CONFIGS,
   NATIVE_TOKEN_ADDRESS,
+  ZERO_ADDRESS,
   WRAPPED_NATIVE_TOKENS,
   isEvmChain,
+  getEvmChainId,
+  getEvmChainConfig,
   type EvmChainId,
 } from './chains.js';
 

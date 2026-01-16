@@ -6,17 +6,43 @@ export {
   EvmChainAdapter,
   createEvmAdapter,
   createAllEvmAdapters,
+  // Chain configuration
   EVM_CHAIN_IDS,
   EVM_CHAIN_CONFIGS,
   NATIVE_TOKEN_ADDRESS,
+  ZERO_ADDRESS,
   WRAPPED_NATIVE_TOKENS,
+  // Chain utilities
   isEvmChain,
+  getEvmChainId,
+  getEvmChainConfig,
+  // Aggregator utilities
   getBestQuote,
   get1inchQuote,
   getParaSwapQuote,
   getSupportedAggregators,
+  // Kaia-specific
+  KAIA_CONTRACTS,
+  KAIA_TOKENS,
+  getDragonSwapQuote,
+  getKlaySwapQuote,
+  getKaiaBestQuote,
+  getKaiaPopularPairs,
+  // Sonic-specific
+  SONIC_CHAIN_ID,
+  SONIC_ROUTERS,
+  SONIC_FACTORIES,
+  SONIC_TOKENS,
+  getSwapXQuote,
+  getShadowQuote,
+  getSonicBestQuote,
+  buildSonicSwapTransaction,
+  getSonicDexes,
+  isSonicChain,
+  // Types
   type EvmChainId,
   type AggregatorQuote,
+  type KaiaQuote,
 } from './evm/index.js';
 
 // Sui adapter exports
