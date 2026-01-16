@@ -26,9 +26,9 @@ If a checkout is >2 hours old with no commits, you may take it over.
 
 | Task ID | Agent | Checkout Time | Expires |
 |---------|-------|---------------|---------|
-| CHAIN-136 | claude-opus-4.5 | 2026-01-16 14:25 | 2hrs |
-| CHAIN-137 | claude-opus | 2026-01-16 14:30 | 2hrs |
-| CHAIN-140 | claude-opus | 2026-01-16 14:35 | 2hrs |
+| CHAIN-141 | claude-opus | 2026-01-16 14:35 | 2hrs |
+| CHAIN-143 | claude-opus-4.5 | 2026-01-16 14:40 | 2hrs |
+| CHAIN-144 | claude-opus | 2026-01-16 14:40 | 2hrs |
 
 ---
 
@@ -151,18 +151,18 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | CHAIN-133 | Mantle Integration | CHAIN-101 | DONE | Chain 5000, ~$1B TVL, Merchant Moe/Agni/FusionX DEX |
 | CHAIN-134 | Manta Pacific Integration | CHAIN-101 | DONE | Chain 169, ApertureSwap/QuickSwap DEX |
 | CHAIN-135 | Mode Integration | CHAIN-101 | TODO | Chain 34443, Velodrome DEX |
-| CHAIN-136 | Hyperliquid Integration | CHAIN-101 | IN_PROGRESS | Chain 999, Native Perps DEX |
-| CHAIN-137 | Gnosis Integration | CHAIN-101 | TODO | Chain 100, ~$400M TVL, Balancer DEX |
+| CHAIN-136 | Hyperliquid Integration | CHAIN-101 | DONE | Chain 999, HyperEVM Spot/Perps DEX |
+| CHAIN-137 | Gnosis Integration | CHAIN-101 | DONE | Chain 100, Balancer/CoW/Curve/SushiSwap DEX |
 | CHAIN-138 | Fantom Integration | CHAIN-101 | DONE | Chain 250, SpookySwap/SpiritSwap/BeethovenX DEX |
 
 ### 7D: Tier 1B - Strategic Chains (9)
 
 | ID | Task | Dependencies | Status | Notes |
 |----|------|--------------|--------|-------|
-| CHAIN-140 | Unichain Integration | CHAIN-101 | TODO | Chain 130, Uniswap's L2 |
+| CHAIN-140 | Unichain Integration | CHAIN-101 | DONE | Chain 130, Uniswap V3/V4 DEX |
 | CHAIN-141 | Taiko Integration | CHAIN-101 | TODO | Chain 167000, Type-1 zkEVM |
-| CHAIN-142 | Metis Integration | CHAIN-101 | TODO | Chain 1088, Netswap DEX |
-| CHAIN-143 | Zora Integration | CHAIN-101 | TODO | Chain 7777777, NFT/Creator |
+| CHAIN-142 | Metis Integration | CHAIN-101 | DONE | Chain 1088, Netswap/Tethys DEX |
+| CHAIN-143 | Zora Integration | CHAIN-101 | IN_PROGRESS | Chain 7777777, NFT/Creator |
 | CHAIN-144 | Fraxtal Integration | CHAIN-101 | TODO | Chain 252, frxETH gas |
 | CHAIN-145 | World Chain Integration | CHAIN-101 | TODO | Chain 480, Worldcoin |
 | CHAIN-146 | Celo Integration | CHAIN-101 | TODO | Chain 42220, Ubeswap DEX |

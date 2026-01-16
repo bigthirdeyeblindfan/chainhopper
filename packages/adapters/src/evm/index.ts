@@ -903,6 +903,79 @@ export {
   type GnosisQuote,
 } from './gnosis.js';
 
+// Export Hyperliquid utilities
+export {
+  HYPERLIQUID_CHAIN_ID,
+  HYPERLIQUID_ROUTERS,
+  HYPERLIQUID_FACTORIES,
+  HYPERLIQUID_TOKENS,
+  getHyperliquidSpotQuote,
+  getHyperliquidPerpsQuote,
+  getHyperliquidBestQuote,
+  buildHyperliquidSwapTransaction,
+  getHyperliquidDexes,
+  isHyperliquidChain,
+  getHyperliquidChainId,
+  getHyperliquidPopularPairs,
+  getHyperliquidFeeTier,
+  type HyperliquidQuote,
+} from './hyperliquid.js';
+
+// Export Unichain utilities
+export {
+  UNICHAIN_CHAIN_ID,
+  UNICHAIN_ROUTERS,
+  UNICHAIN_FACTORIES,
+  UNICHAIN_TOKENS,
+  UNICHAIN_SWAP_ROUTER_ABI,
+  UNIVERSAL_ROUTER_ABI,
+  getUniswapUnichainQuote,
+  getUniswapV3UnichainQuote,
+  getUnichainBestQuote,
+  buildUnichainSwapTransaction,
+  getUnichainDexes,
+  isUnichainChain,
+  getUnichainChainId,
+  getUnichainFeeTiers,
+  getUnichainPopularPairs,
+  type UnichainQuote,
+} from './unichain.js';
+
+// Export Metis utilities
+export {
+  METIS_CHAIN_ID,
+  METIS_ROUTERS,
+  METIS_FACTORIES,
+  METIS_TOKENS,
+  NETSWAP_ROUTER_ABI,
+  TETHYS_ROUTER_ABI,
+  getNetswapQuote,
+  getTethysQuote,
+  getMetisBestQuote,
+  buildMetisSwapTransaction,
+  getMetisDexes,
+  isMetisChain,
+  getMetisChainId,
+  getMetisPopularPairs,
+  type MetisQuote,
+} from './metis.js';
+
+// Export Mode utilities
+export {
+  MODE_CONTRACTS,
+  MODE_TOKENS,
+  getSwapModeV2Quote,
+  getSwapModeV3Quote,
+  getKimQuote,
+  getModeBestQuote,
+  buildModeSwapTransaction,
+  getModeDexes,
+  isModeChain,
+  getModeChainId,
+  getModePopularPairs,
+  type ModeQuote,
+} from './mode.js';
+
 // Factory function to create adapter for a chain
 export function createEvmAdapter(
   chainId: EvmChainId,
