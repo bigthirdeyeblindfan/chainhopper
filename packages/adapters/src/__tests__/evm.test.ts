@@ -23,8 +23,27 @@ describe('EVM Chain Configuration', () => {
       expect(EVM_CHAIN_IDS.avalanche).toBe(43114);
     });
 
-    it('should have 10 supported EVM chains', () => {
-      expect(Object.keys(EVM_CHAIN_IDS)).toHaveLength(10);
+    it('should have 45 supported EVM chains', () => {
+      // 10 original + 35 Phase 7 chains (36 new minus hyperliquid and starknet which are non-EVM)
+      expect(Object.keys(EVM_CHAIN_IDS)).toHaveLength(45);
+    });
+
+    it('should have correct chain IDs for Phase 7 chains', () => {
+      // Phase 7B: Originally Planned
+      expect(EVM_CHAIN_IDS.monad).toBe(143);
+      expect(EVM_CHAIN_IDS.scroll).toBe(534352);
+      expect(EVM_CHAIN_IDS.ronin).toBe(2020);
+      // Phase 7C: High TVL
+      expect(EVM_CHAIN_IDS.linea).toBe(59144);
+      expect(EVM_CHAIN_IDS.zksync).toBe(324);
+      expect(EVM_CHAIN_IDS.mantle).toBe(5000);
+      // Phase 7D: Strategic
+      expect(EVM_CHAIN_IDS.unichain).toBe(130);
+      expect(EVM_CHAIN_IDS.celo).toBe(42220);
+      expect(EVM_CHAIN_IDS.cronos).toBe(25);
+      // Phase 7E: Emerging
+      expect(EVM_CHAIN_IDS.moonbeam).toBe(1284);
+      expect(EVM_CHAIN_IDS.moonriver).toBe(1285);
     });
   });
 
