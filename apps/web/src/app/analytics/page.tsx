@@ -38,14 +38,9 @@ export default function AnalyticsPage() {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <StatCard label="Total Trades" value="47" />
-          <StatCard label="Win Rate" value="68%" change={5.2} />
+          <StatCard label="Win Rate" value="68%" change="+5.2%" />
           <StatCard label="Total Volume" value="$125,430" />
-          <StatCard
-            label="Fees Saved"
-            value="$1,254"
-            subtext="vs 1% flat fee"
-            className="bg-emerald-500/5 border-emerald-500/20"
-          />
+          <StatCard label="Fees Saved" value="$1,254" />
         </div>
 
         {/* Charts */}

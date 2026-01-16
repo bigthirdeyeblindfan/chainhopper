@@ -1,125 +1,152 @@
 'use client'
 
-import { Card, StatCard, Badge } from '@/components/ui'
+import { useAccount, useBalance, useChainId, useChains } from 'wagmi'
+import { formatUnits } from 'viem'
+import { Card, StatCard, Badge, Button } from '@/components/ui'
 import { Header, PageContainer } from '@/components/layout'
-import { TradeHistory } from '@/components/features'
+import { ConnectWallet } from '@/components/features/ConnectWallet'
 
-const mockTrades = [
-  {
-    id: '1',
-    type: 'swap' as const,
-    status: 'completed' as const,
-    fromToken: 'ETH',
-    toToken: 'USDC',
-    fromAmount: '1.5',
-    toAmount: '2,850',
-    fromChain: 'Ethereum',
-    toChain: 'Ethereum',
-    timestamp: new Date(Date.now() - 3600000),
-    txHash: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
-    profit: '42.50',
-    fee: '6.38',
-  },
-  {
-    id: '2',
-    type: 'bridge' as const,
-    status: 'pending' as const,
-    fromToken: 'USDC',
-    toToken: 'USDC',
-    fromAmount: '1,000',
-    toAmount: '999.50',
-    fromChain: 'Ethereum',
-    toChain: 'Arbitrum',
-    timestamp: new Date(Date.now() - 300000),
-    txHash: '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890',
-  },
-]
-
-const chainStatus = [
-  { name: 'Ethereum', icon: '⟠', status: 'connected' },
-  { name: 'Arbitrum', icon: '🔵', status: 'connected' },
-  { name: 'Sonic', icon: '⚡', status: 'available' },
-  { name: 'Kaia', icon: '🌸', status: 'available' },
-  { name: 'Berachain', icon: '🐻', status: 'available' },
-  { name: 'Sui', icon: '🌊', status: 'coming_soon' },
-]
+// Chain metadata for display
+const chainMeta: Record<number, { name: string; icon: string; symbol: string }> = {
+  1: { name: 'Ethereum', icon: '⟠', symbol: 'ETH' },
+  42161: { name: 'Arbitrum', icon: '🔵', symbol: 'ETH' },
+  10: { name: 'Optimism', icon: '🔴', symbol: 'ETH' },
+  8453: { name: 'Base', icon: '🔷', symbol: 'ETH' },
+  137: { name: 'Polygon', icon: '🟣', symbol: 'MATIC' },
+  8217: { name: 'Kaia', icon: '🌸', symbol: 'KAIA' },
+  1001: { name: 'Kaia Testnet', icon: '🌸', symbol: 'KAIA' },
+}
 
 export default function DashboardPage() {
+  const { address, isConnected } = useAccount()
+  const chainId = useChainId()
+  const chains = useChains()
+
+  // Get balance for current chain
+  const { data: balance, isLoading: balanceLoading } = useBalance({
+    address,
+  })
+
+  const currentChain = chainMeta[chainId] || { name: 'Unknown', icon: '?', symbol: '???' }
+
+  // Format balance
+  const formattedBalance = balance
+    ? parseFloat(formatUnits(balance.value, balance.decimals)).toFixed(4)
+    : '0.0000'
+
+  if (!isConnected) {
+    return (
+      <>
+        <Header />
+        <PageContainer
+          title="Dashboard"
+          subtitle="Connect your wallet to view your portfolio"
+        >
+          <Card className="text-center py-12">
+            <div className="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-white mb-2">No Wallet Connected</h3>
+            <p className="text-zinc-400 mb-6 max-w-md mx-auto">
+              Connect your wallet to view your portfolio, balances, and start trading across multiple chains.
+            </p>
+            <ConnectWallet className="inline-block" />
+          </Card>
+        </PageContainer>
+      </>
+    )
+  }
+
   return (
     <>
       <Header />
       <PageContainer
         title="Dashboard"
-        subtitle="Overview of your trading activity"
+        subtitle={`Connected: ${address?.slice(0, 6)}...${address?.slice(-4)}`}
       >
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <StatCard
-            label="Total Portfolio Value"
-            value="$12,450.00"
-            change={5.23}
+            label={`${currentChain.symbol} Balance`}
+            value={balanceLoading ? 'Loading...' : `${formattedBalance} ${currentChain.symbol}`}
           />
           <StatCard
-            label="Total Profit/Loss"
-            value="$1,234.56"
-            change={12.5}
-            subtext="All time"
+            label="Connected Chain"
+            value={currentChain.name}
           />
           <StatCard
-            label="Active Chains"
-            value="2"
-            subtext="Connected"
+            label="Available Chains"
+            value={chains.length.toString()}
           />
           <StatCard
-            label="Pending Trades"
-            value="1"
-            subtext="In queue"
+            label="Wallet"
+            value={`${address?.slice(0, 6)}...${address?.slice(-4)}`}
           />
         </div>
 
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Recent Trades */}
+          {/* Current Chain Balance */}
           <Card>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-white">Recent Trades</h2>
-              <a href="/portfolio" className="text-sm text-emerald-400 hover:text-emerald-300">
-                View all
-              </a>
+            <h2 className="text-lg font-semibold text-white mb-4">Current Balance</h2>
+            <div className="p-6 bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 rounded-xl border border-emerald-500/20">
+              <div className="flex items-center gap-4">
+                <span className="text-4xl">{currentChain.icon}</span>
+                <div>
+                  <p className="text-3xl font-bold text-white">
+                    {balanceLoading ? '...' : formattedBalance}
+                  </p>
+                  <p className="text-zinc-400">{currentChain.symbol} on {currentChain.name}</p>
+                </div>
+              </div>
             </div>
-            <TradeHistory trades={mockTrades} />
+
+            {balance && balance.value > 0n && (
+              <div className="mt-4 flex gap-3">
+                <a
+                  href="/trade"
+                  className="flex-1 px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-white font-medium rounded-xl transition-colors text-center"
+                >
+                  Swap
+                </a>
+                <button className="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 text-white font-medium rounded-xl border border-white/10 transition-colors">
+                  Bridge
+                </button>
+              </div>
+            )}
           </Card>
 
-          {/* Chain Status */}
+          {/* Available Chains */}
           <Card>
-            <h2 className="text-lg font-semibold text-white mb-4">Chain Status</h2>
+            <h2 className="text-lg font-semibold text-white mb-4">Available Chains</h2>
             <div className="space-y-3">
-              {chainStatus.map((chain) => (
-                <div
-                  key={chain.name}
-                  className="flex items-center justify-between p-3 bg-white/5 rounded-xl"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-xl">{chain.icon}</span>
-                    <span className="text-sm font-medium text-white">{chain.name}</span>
-                  </div>
-                  <Badge
-                    variant={
-                      chain.status === 'connected'
-                        ? 'success'
-                        : chain.status === 'available'
-                        ? 'default'
-                        : 'warning'
-                    }
+              {chains.map((chain) => {
+                const meta = chainMeta[chain.id] || { name: chain.name, icon: '🔗', symbol: '?' }
+                const isActive = chain.id === chainId
+                return (
+                  <div
+                    key={chain.id}
+                    className={`flex items-center justify-between p-3 rounded-xl ${
+                      isActive ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-white/5'
+                    }`}
                   >
-                    {chain.status === 'connected'
-                      ? 'Connected'
-                      : chain.status === 'available'
-                      ? 'Available'
-                      : 'Coming Soon'}
-                  </Badge>
-                </div>
-              ))}
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl">{meta.icon}</span>
+                      <div>
+                        <span className="text-sm font-medium text-white">{meta.name}</span>
+                        {chain.testnet && (
+                          <span className="ml-2 text-xs text-zinc-500">(Testnet)</span>
+                        )}
+                      </div>
+                    </div>
+                    <Badge variant={isActive ? 'success' : 'default'}>
+                      {isActive ? 'Connected' : 'Available'}
+                    </Badge>
+                  </div>
+                )
+              })}
             </div>
           </Card>
         </div>
@@ -129,7 +156,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-semibold text-white">Quick Actions</h2>
-              <p className="text-sm text-zinc-500 mt-1">Get started with common tasks</p>
+              <p className="text-sm text-zinc-500 mt-1">Trade across chains with the best rates</p>
             </div>
             <div className="flex gap-3">
               <a

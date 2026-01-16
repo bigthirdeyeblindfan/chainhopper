@@ -1,14 +1,19 @@
 'use client'
 
-import { useState } from 'react'
-import { Button, IconButton } from '../ui'
+import { useAccount, useChainId } from 'wagmi'
+import { IconButton } from '../ui'
+import { ConnectWallet } from '../features/ConnectWallet'
+import { kaiaTestnet } from '@/lib/web3'
 
 interface HeaderProps {
   title?: string
 }
 
 export function Header({ title }: HeaderProps) {
-  const [isConnected, setIsConnected] = useState(false)
+  const { isConnected } = useAccount()
+  const chainId = useChainId()
+
+  const isCorrectNetwork = chainId === kaiaTestnet.id
 
   return (
     <header className="h-16 border-b border-white/5 bg-zinc-950/50 backdrop-blur-xl sticky top-0 z-40">
@@ -45,22 +50,23 @@ export function Header({ title }: HeaderProps) {
           </IconButton>
 
           {/* Network status */}
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 rounded-lg">
-            <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-            <span className="text-xs font-medium text-emerald-400">All Systems Online</span>
-          </div>
+          {isConnected && (
+            <div className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg ${
+              isCorrectNetwork ? 'bg-emerald-500/10' : 'bg-amber-500/10'
+            }`}>
+              <span className={`w-2 h-2 rounded-full ${
+                isCorrectNetwork ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
+              }`} />
+              <span className={`text-xs font-medium ${
+                isCorrectNetwork ? 'text-emerald-400' : 'text-amber-400'
+              }`}>
+                {isCorrectNetwork ? 'Kaia Testnet' : 'Wrong Network'}
+              </span>
+            </div>
+          )}
 
           {/* Connect Wallet */}
-          {isConnected ? (
-            <Button variant="secondary" size="sm">
-              <span className="w-2 h-2 bg-emerald-400 rounded-full" />
-              0x1234...5678
-            </Button>
-          ) : (
-            <Button size="sm" onClick={() => setIsConnected(true)}>
-              Connect Wallet
-            </Button>
-          )}
+          <ConnectWallet />
         </div>
       </div>
     </header>

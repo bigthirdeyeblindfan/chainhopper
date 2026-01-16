@@ -1,116 +1,142 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, StatCard, Button, Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui'
+import { useAccount, useBalance, useChains } from 'wagmi'
+import { formatUnits } from 'viem'
+import { Card, StatCard, Button } from '@/components/ui'
 import { Header, PageContainer } from '@/components/layout'
-import { PortfolioTable, TradeHistory } from '@/components/features'
+import { ConnectWallet } from '@/components/features/ConnectWallet'
 
-const mockAssets = [
-  { symbol: 'ETH', name: 'Ethereum', chain: 'ethereum', balance: '2.5', value: '4,750.00', price: '1,900.00', change24h: 2.34 },
-  { symbol: 'USDC', name: 'USD Coin', chain: 'ethereum', balance: '5,000', value: '5,000.00', price: '1.00', change24h: 0.01 },
-  { symbol: 'ARB', name: 'Arbitrum', chain: 'arbitrum', balance: '1,500', value: '1,800.00', price: '1.20', change24h: -1.5 },
-  { symbol: 'WBTC', name: 'Wrapped Bitcoin', chain: 'ethereum', balance: '0.05', value: '2,100.00', price: '42,000.00', change24h: 3.2 },
-]
+// Chain metadata
+const chainMeta: Record<number, { name: string; icon: string; symbol: string }> = {
+  1: { name: 'Ethereum', icon: '⟠', symbol: 'ETH' },
+  42161: { name: 'Arbitrum', icon: '🔵', symbol: 'ETH' },
+  10: { name: 'Optimism', icon: '🔴', symbol: 'ETH' },
+  8453: { name: 'Base', icon: '🔷', symbol: 'ETH' },
+  137: { name: 'Polygon', icon: '🟣', symbol: 'MATIC' },
+  8217: { name: 'Kaia', icon: '🌸', symbol: 'KAIA' },
+  1001: { name: 'Kaia Testnet', icon: '🌸', symbol: 'KAIA' },
+}
 
-const mockTrades = [
-  {
-    id: '1',
-    type: 'swap' as const,
-    status: 'completed' as const,
-    fromToken: 'ETH',
-    toToken: 'USDC',
-    fromAmount: '1.5',
-    toAmount: '2,850',
-    fromChain: 'Ethereum',
-    toChain: 'Ethereum',
-    timestamp: new Date(Date.now() - 3600000),
-    txHash: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
-    profit: '42.50',
-    fee: '6.38',
-  },
-  {
-    id: '2',
-    type: 'swap' as const,
-    status: 'completed' as const,
-    fromToken: 'ARB',
-    toToken: 'ETH',
-    fromAmount: '500',
-    toAmount: '0.32',
-    fromChain: 'Arbitrum',
-    toChain: 'Arbitrum',
-    timestamp: new Date(Date.now() - 86400000),
-    txHash: '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890',
-    profit: '12.00',
-    fee: '1.80',
-  },
-]
+function ChainBalance({ chainId, address }: { chainId: number; address: `0x${string}` }) {
+  const { data: balance, isLoading } = useBalance({
+    address,
+    chainId,
+  })
+
+  const meta = chainMeta[chainId] || { name: 'Unknown', icon: '?', symbol: '???' }
+  const formattedBalance = balance
+    ? parseFloat(formatUnits(balance.value, balance.decimals)).toFixed(6)
+    : '0.000000'
+
+  const hasBalance = balance && balance.value > 0n
+
+  return (
+    <div className={`flex items-center justify-between p-4 rounded-xl ${hasBalance ? 'bg-white/5' : 'bg-white/[0.02]'}`}>
+      <div className="flex items-center gap-3">
+        <span className="text-2xl">{meta.icon}</span>
+        <div>
+          <p className="font-medium text-white">{meta.name}</p>
+          <p className="text-sm text-zinc-500">{meta.symbol}</p>
+        </div>
+      </div>
+      <div className="text-right">
+        <p className={`font-mono ${hasBalance ? 'text-white' : 'text-zinc-600'}`}>
+          {isLoading ? '...' : formattedBalance}
+        </p>
+        <p className="text-sm text-zinc-500">{meta.symbol}</p>
+      </div>
+    </div>
+  )
+}
 
 export default function PortfolioPage() {
-  const [activeTab, setActiveTab] = useState('holdings')
+  const { address, isConnected } = useAccount()
+  const chains = useChains()
+  const [showZeroBalances, setShowZeroBalances] = useState(false)
+
+  // Get balance for first chain to show total (simplified)
+  const { data: mainBalance } = useBalance({ address })
+
+  if (!isConnected || !address) {
+    return (
+      <>
+        <Header />
+        <PageContainer
+          title="Portfolio"
+          subtitle="Connect your wallet to view holdings"
+        >
+          <Card className="text-center py-12">
+            <div className="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-white mb-2">No Wallet Connected</h3>
+            <p className="text-zinc-400 mb-6 max-w-md mx-auto">
+              Connect your wallet to view your holdings across all supported chains.
+            </p>
+            <ConnectWallet className="inline-block" />
+          </Card>
+        </PageContainer>
+      </>
+    )
+  }
 
   return (
     <>
       <Header />
       <PageContainer
         title="Portfolio"
-        subtitle="Track your holdings across all chains"
+        subtitle={`Viewing holdings for ${address.slice(0, 6)}...${address.slice(-4)}`}
         action={
-          <Button variant="secondary" size="sm">
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            Sync
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => setShowZeroBalances(!showZeroBalances)}
+          >
+            {showZeroBalances ? 'Hide' : 'Show'} Zero Balances
           </Button>
         }
       >
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <StatCard
-            label="Total Value"
-            value="$13,650.00"
-            change={4.5}
+            label="Connected Chains"
+            value={chains.length.toString()}
           />
           <StatCard
-            label="24h Change"
-            value="$612.50"
-            change={4.5}
+            label="Wallet Address"
+            value={`${address.slice(0, 8)}...${address.slice(-6)}`}
           />
           <StatCard
-            label="All-Time P&L"
-            value="$2,150.00"
-            change={18.7}
+            label="Current Balance"
+            value={mainBalance ? `${parseFloat(formatUnits(mainBalance.value, mainBalance.decimals)).toFixed(4)} ${mainBalance.symbol}` : 'Loading...'}
           />
         </div>
 
-        {/* Tabs */}
+        {/* Holdings by Chain */}
         <Card>
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="mb-6">
-              <TabsTrigger value="holdings">Holdings</TabsTrigger>
-              <TabsTrigger value="history">Trade History</TabsTrigger>
-              <TabsTrigger value="positions">Open Positions</TabsTrigger>
-            </TabsList>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-semibold text-white">Holdings by Chain</h2>
+            <span className="text-sm text-zinc-500">{chains.length} chains configured</span>
+          </div>
 
-            <TabsContent value="holdings">
-              <PortfolioTable assets={mockAssets} />
-            </TabsContent>
+          <div className="space-y-3">
+            {chains.map((chain) => (
+              <ChainBalance
+                key={chain.id}
+                chainId={chain.id}
+                address={address}
+              />
+            ))}
+          </div>
 
-            <TabsContent value="history">
-              <TradeHistory trades={mockTrades} />
-            </TabsContent>
-
-            <TabsContent value="positions">
-              <div className="text-center py-12">
-                <div className="w-16 h-16 mx-auto mb-4 bg-white/5 rounded-full flex items-center justify-center">
-                  <svg className="w-8 h-8 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-                </div>
-                <p className="text-zinc-400 font-medium">No open positions</p>
-                <p className="text-zinc-600 text-sm mt-1">Your active trades will appear here</p>
-              </div>
-            </TabsContent>
-          </Tabs>
+          <div className="mt-6 pt-6 border-t border-white/5">
+            <p className="text-sm text-zinc-500 text-center">
+              Balances fetched directly from RPC endpoints. Token balances coming soon.
+            </p>
+          </div>
         </Card>
       </PageContainer>
     </>
