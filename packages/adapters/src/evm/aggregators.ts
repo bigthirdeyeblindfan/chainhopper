@@ -6,6 +6,7 @@ import { getAbstractBestQuote, isAbstractChain } from './abstract.js';
 import { getZeroGBestQuote, isZeroGChain } from './zerog.js';
 import { getAstarBestQuote, isAstarChain } from './astar.js';
 import { getStableBestQuote, isStableChain } from './stable.js';
+import { getLiskBestQuote, isLiskChain } from './lisk.js';
 
 // Aggregator API endpoints
 const AGGREGATOR_APIS = {
@@ -65,6 +66,7 @@ const NATIVE_DEX_CHAINS: EvmChainId[] = [
   'metis',      // Netswap
   'moonbeam',   // StellaSwap
   'moonriver',  // Solarbeam
+  'lisk',       // Velodrome, Oku Trade
 ];
 
 export interface AggregatorQuote {
@@ -413,6 +415,24 @@ export async function getBestQuote(
         txData: stableQuote.txData,
         txTo: stableQuote.txTo,
         txValue: stableQuote.txValue,
+      };
+    }
+    return null;
+  }
+
+  // Route Lisk chain to native DEX (Velodrome, Oku Trade)
+  if (isLiskChain(request.chainId)) {
+    const liskQuote = await getLiskBestQuote(request);
+    if (liskQuote) {
+      return {
+        aggregator: liskQuote.aggregator,
+        amountOut: liskQuote.amountOut,
+        estimatedGas: liskQuote.estimatedGas,
+        priceImpact: liskQuote.priceImpact,
+        route: liskQuote.route,
+        txData: liskQuote.txData,
+        txTo: liskQuote.txTo,
+        txValue: liskQuote.txValue,
       };
     }
     return null;

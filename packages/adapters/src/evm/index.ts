@@ -1056,6 +1056,124 @@ export {
   type WorldChainQuote,
 } from './worldchain.js';
 
+// Export Cronos utilities
+export {
+  CRONOS_CHAIN_ID,
+  CRONOS_ROUTERS,
+  CRONOS_FACTORIES,
+  CRONOS_TOKENS,
+  VVS_ROUTER_ABI,
+  MM_FINANCE_ROUTER_ABI,
+  getVVSFinanceQuote,
+  getMMFinanceQuote,
+  getCrodexQuote,
+  getCronosBestQuote,
+  buildCronosSwapTransaction,
+  getCronosDexes,
+  isCronosChain,
+  getCronosChainId,
+  getCronosPopularPairs,
+  type CronosQuote,
+} from './cronos.js';
+
+// Export Celo utilities
+export {
+  CELO_CHAIN_ID,
+  CELO_ROUTERS,
+  CELO_FACTORIES,
+  CELO_TOKENS,
+  UBESWAP_V2_ROUTER_ABI,
+  UBESWAP_V3_ROUTER_ABI,
+  getUbeswapV3Quote,
+  getUbeswapV2Quote,
+  getCeloStableQuote,
+  getCeloBestQuote,
+  buildCeloSwapTransaction,
+  getCeloDexes,
+  isCeloChain,
+  getCeloChainId,
+  getCeloPopularPairs,
+  type CeloQuote,
+} from './celo.js';
+
+// Export Cyber utilities
+export {
+  CYBER_CHAIN_ID,
+  CYBER_ROUTERS,
+  CYBER_FACTORIES,
+  CYBER_TOKENS,
+  CYBERSWAP_ROUTER_ABI,
+  CYBER_VELODROME_ROUTER_ABI,
+  CYBER_FEE_TIERS,
+  getCyberSwapQuote,
+  getCyberVelodromeQuote,
+  getCyberBestQuote,
+  buildCyberSwapTransaction,
+  getCyberDexes,
+  isCyberChain,
+  getCyberChainId,
+  getCyberPopularPairs,
+  getCyberFeeTiers,
+  type CyberQuote,
+} from './cyber.js';
+
+// Export Moonriver utilities
+export {
+  MOONRIVER_CHAIN_ID,
+  MOONRIVER_ROUTERS,
+  MOONRIVER_FACTORIES,
+  MOONRIVER_TOKENS,
+  SOLARBEAM_ROUTER_ABI,
+  HUCKLEBERRY_ROUTER_ABI,
+  getSolarbeamQuote,
+  getHuckleberryQuote,
+  getZenlinkMoonriverQuote,
+  getMoonriverBestQuote,
+  buildMoonriverSwapTransaction,
+  getMoonriverDexes,
+  isMoonriverChain,
+  getMoonriverChainId,
+  getMoonriverPopularPairs,
+  type MoonriverQuote,
+} from './moonriver.js';
+
+// Export Lisk utilities
+export {
+  LISK_CHAIN_ID,
+  LISK_ROUTERS,
+  LISK_FACTORIES,
+  LISK_TOKENS,
+  LISK_VELODROME_ROUTER_ABI,
+  LISK_UNISWAP_V3_ROUTER_ABI,
+  getVelodromeLiskQuote,
+  getOkuLiskQuote,
+  getLiskBestQuote,
+  buildLiskSwapTransaction,
+  getLiskDexes,
+  isLiskChain,
+  getLiskChainId,
+  getLiskPopularPairs,
+  type LiskQuote,
+} from './lisk.js';
+
+// Export Redstone utilities
+export {
+  REDSTONE_CHAIN_ID,
+  REDSTONE_ROUTERS,
+  REDSTONE_FACTORIES,
+  REDSTONE_TOKENS,
+  GARNETSWAP_ROUTER_ABI,
+  getGarnetSwapQuote,
+  getMudSwapQuote,
+  getRedstoneBestQuote,
+  buildRedstoneSwapTransaction,
+  getRedstoneDexes,
+  isRedstoneChain,
+  getRedstoneChainId,
+  getRedstonePopularPairs,
+  type RedstoneQuote,
+} from './redstone.js';
+
 // Factory function to create adapter for a chain
 export function createEvmAdapter(
   chainId: EvmChainId,
