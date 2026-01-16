@@ -26,9 +26,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 
 | Task ID | Agent | Checkout Time | Expires |
 |---------|-------|---------------|---------|
-| CHAIN-130 | claude-opus | 2026-01-16 14:10 | 2hrs |
-| CHAIN-131 | claude-opus-4.5 | 2026-01-16 14:15 | 2hrs |
-| CHAIN-132 | claude-opus | 2026-01-16 14:20 | 2hrs |
+| CHAIN-134 | claude-opus | 2026-01-16 14:20 | 2hrs |
 
 ---
 
@@ -145,10 +143,10 @@ If a checkout is >2 hours old with no commits, you may take it over.
 
 | ID | Task | Dependencies | Status | Notes |
 |----|------|--------------|--------|-------|
-| CHAIN-130 | Linea Integration | CHAIN-101 | TODO | Chain 59144, ~$963M TVL, Lynex DEX |
-| CHAIN-131 | zkSync Era Integration | CHAIN-101 | IN_PROGRESS | Chain 324, ~$569M TVL, SyncSwap DEX |
-| CHAIN-132 | Blast Integration | CHAIN-101 | TODO | Chain 238, Thruster DEX |
-| CHAIN-133 | Mantle Integration | CHAIN-101 | TODO | Chain 5000, ~$1B TVL, Merchant Moe DEX |
+| CHAIN-130 | Linea Integration | CHAIN-101 | DONE | Chain 59144, ~$963M TVL, Lynex/SyncSwap DEX |
+| CHAIN-131 | zkSync Era Integration | CHAIN-101 | DONE | Chain 324, ~$569M TVL, SyncSwap/Mute/SpaceFi DEX |
+| CHAIN-132 | Blast Integration | CHAIN-101 | DONE | Chain 81457, Thruster V2/V3 + BladeSwap DEX |
+| CHAIN-133 | Mantle Integration | CHAIN-101 | DONE | Chain 5000, ~$1B TVL, Merchant Moe/Agni/FusionX DEX |
 | CHAIN-134 | Manta Pacific Integration | CHAIN-101 | TODO | Chain 169, OP Stack |
 | CHAIN-135 | Mode Integration | CHAIN-101 | TODO | Chain 34443, Velodrome DEX |
 | CHAIN-136 | Hyperliquid Integration | CHAIN-101 | TODO | Chain 999, Native Perps DEX |

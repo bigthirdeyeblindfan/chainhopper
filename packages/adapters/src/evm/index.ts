@@ -783,6 +783,85 @@ export {
   type LineaQuote,
 } from './linea.js';
 
+// Export zkSync Era utilities
+export {
+  ZKSYNC_CHAIN_ID,
+  ZKSYNC_ROUTERS,
+  ZKSYNC_FACTORIES,
+  ZKSYNC_TOKENS,
+  SYNCSWAP_ROUTER_ABI as ZKSYNC_SYNCSWAP_ROUTER_ABI,
+  MUTE_ROUTER_ABI,
+  getSyncSwapZkSyncQuote,
+  getMuteQuote,
+  getSpaceFiQuote,
+  getZkSyncBestQuote,
+  buildZkSyncSwapTransaction,
+  getZkSyncDexes,
+  isZkSyncChain,
+  getZkSyncChainId,
+  getZkSyncPopularPairs,
+  type ZkSyncQuote,
+} from './zksync.js';
+
+// Export Blast utilities
+export {
+  BLAST_CHAIN_ID,
+  BLAST_ROUTERS,
+  BLAST_FACTORIES,
+  BLAST_TOKENS,
+  THRUSTER_V2_ROUTER_ABI,
+  THRUSTER_V3_ROUTER_ABI,
+  getThrusterV3Quote,
+  getThrusterV2Quote,
+  getBladeSwapQuote,
+  getBlastBestQuote,
+  buildBlastSwapTransaction,
+  getBlastDexes,
+  isBlastChain,
+  getBlastChainId,
+  getBlastPopularPairs,
+  type BlastQuote,
+} from './blast.js';
+
+// Export Mantle utilities
+export {
+  MANTLE_CHAIN_ID,
+  MANTLE_ROUTERS,
+  MANTLE_FACTORIES,
+  MANTLE_TOKENS,
+  MERCHANT_MOE_ROUTER_ABI,
+  AGNI_ROUTER_ABI,
+  getMerchantMoeQuote,
+  getAgniQuote,
+  getFusionXQuote,
+  getMantleBestQuote,
+  buildMantleSwapTransaction,
+  getMantleDexes,
+  isMantleChain,
+  getMantleChainId,
+  getMantlePopularPairs,
+  type MantleQuote,
+} from './mantle.js';
+
+// Export Manta Pacific utilities
+export {
+  MANTA_CHAIN_ID,
+  MANTA_ROUTERS,
+  MANTA_FACTORIES,
+  MANTA_TOKENS,
+  APERTURESWAP_ROUTER_ABI,
+  MANTA_QUICKSWAP_ROUTER_ABI,
+  getApertureSwapQuote,
+  getQuickSwapMantaQuote,
+  getMantaBestQuote,
+  buildMantaSwapTransaction,
+  getMantaDexes,
+  isMantaChain,
+  getMantaChainId,
+  getMantaPopularPairs,
+  type MantaQuote,
+} from './manta.js';
+
 // Factory function to create adapter for a chain
 export function createEvmAdapter(
   chainId: EvmChainId,
