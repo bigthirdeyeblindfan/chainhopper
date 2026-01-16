@@ -862,6 +862,47 @@ export {
   type MantaQuote,
 } from './manta.js';
 
+// Export Fantom utilities
+export {
+  FANTOM_CHAIN_ID,
+  FANTOM_ROUTERS,
+  FANTOM_FACTORIES,
+  FANTOM_TOKENS,
+  SPOOKYSWAP_ROUTER_ABI,
+  BEETHOVENX_VAULT_ABI,
+  getSpookySwapQuote,
+  getSpiritSwapQuote,
+  getBeethovenXQuote,
+  getFantomBestQuote,
+  buildFantomSwapTransaction,
+  getFantomDexes,
+  isFantomChain,
+  getFantomChainId,
+  getFantomPopularPairs,
+  type FantomQuote,
+} from './fantom.js';
+
+// Export Gnosis utilities
+export {
+  GNOSIS_CHAIN_ID,
+  GNOSIS_ROUTERS,
+  GNOSIS_FACTORIES,
+  GNOSIS_TOKENS,
+  BALANCER_VAULT_ABI,
+  SUSHISWAP_ROUTER_ABI as GNOSIS_SUSHISWAP_ROUTER_ABI,
+  getBalancerQuote,
+  getCowSwapQuote,
+  getSushiSwapGnosisQuote,
+  getCurveGnosisQuote,
+  getGnosisBestQuote,
+  buildGnosisSwapTransaction,
+  getGnosisDexes,
+  isGnosisChain,
+  getGnosisChainId,
+  getGnosisPopularPairs,
+  type GnosisQuote,
+} from './gnosis.js';
+
 // Factory function to create adapter for a chain
 export function createEvmAdapter(
   chainId: EvmChainId,

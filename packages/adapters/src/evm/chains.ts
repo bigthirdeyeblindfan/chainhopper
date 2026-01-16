@@ -25,13 +25,14 @@ export const EVM_CHAIN_IDS = {
   apechain: 33139,
   ronin: 2020,
   stable: 988,
-  // Phase 7C: Tier 1A - High TVL (8 chains, hyperliquid is non-EVM)
+  // Phase 7C: Tier 1A - High TVL (9 chains)
   linea: 59144,
   zksync: 324,
   blast: 81457,
   mantle: 5000,
   manta: 169,
   mode: 34443,
+  hyperliquid: 999,
   gnosis: 100,
   fantom: 250,
   // Phase 7D: Tier 1B - Strategic (9 chains)
@@ -92,6 +93,7 @@ export const WRAPPED_NATIVE_TOKENS: Record<EvmChainId, string> = {
   mantle: '0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8', // WMNT
   manta: '0x0Dc808adcE2099A9F62AA87D9670745AbA741746', // WETH
   mode: '0x4200000000000000000000000000000000000006', // WETH (OP Stack)
+  hyperliquid: '0x5555555555555555555555555555555555555555', // WHYPE (placeholder)
   gnosis: '0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d', // WXDAI
   fantom: '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83', // WFTM
   // Phase 7D: Tier 1B - Strategic
@@ -508,6 +510,20 @@ export const EVM_CHAIN_CONFIGS: Record<EvmChainId, ChainConfig> = {
       'https://mode.drpc.org',
     ],
     blockExplorerUrls: ['https://modescan.io'],
+    contracts: {},
+    isTestnet: false,
+    isEnabled: true,
+  },
+  hyperliquid: {
+    id: 'hyperliquid',
+    name: 'Hyperliquid',
+    type: 'evm',
+    nativeCurrency: { name: 'HYPE', symbol: 'HYPE', decimals: 18 },
+    rpcUrls: [
+      'https://rpc.hyperliquid.xyz/evm',
+      'https://api.hyperliquid.xyz/evm',
+    ],
+    blockExplorerUrls: ['https://explorer.hyperliquid.xyz'],
     contracts: {},
     isTestnet: false,
     isEnabled: true,

@@ -26,7 +26,9 @@ If a checkout is >2 hours old with no commits, you may take it over.
 
 | Task ID | Agent | Checkout Time | Expires |
 |---------|-------|---------------|---------|
-| CHAIN-134 | claude-opus | 2026-01-16 14:20 | 2hrs |
+| CHAIN-136 | claude-opus-4.5 | 2026-01-16 14:25 | 2hrs |
+| CHAIN-137 | claude-opus | 2026-01-16 14:30 | 2hrs |
+| CHAIN-140 | claude-opus | 2026-01-16 14:35 | 2hrs |
 
 ---
 
@@ -147,11 +149,11 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | CHAIN-131 | zkSync Era Integration | CHAIN-101 | DONE | Chain 324, ~$569M TVL, SyncSwap/Mute/SpaceFi DEX |
 | CHAIN-132 | Blast Integration | CHAIN-101 | DONE | Chain 81457, Thruster V2/V3 + BladeSwap DEX |
 | CHAIN-133 | Mantle Integration | CHAIN-101 | DONE | Chain 5000, ~$1B TVL, Merchant Moe/Agni/FusionX DEX |
-| CHAIN-134 | Manta Pacific Integration | CHAIN-101 | TODO | Chain 169, OP Stack |
+| CHAIN-134 | Manta Pacific Integration | CHAIN-101 | DONE | Chain 169, ApertureSwap/QuickSwap DEX |
 | CHAIN-135 | Mode Integration | CHAIN-101 | TODO | Chain 34443, Velodrome DEX |
-| CHAIN-136 | Hyperliquid Integration | CHAIN-101 | TODO | Chain 999, Native Perps DEX |
+| CHAIN-136 | Hyperliquid Integration | CHAIN-101 | IN_PROGRESS | Chain 999, Native Perps DEX |
 | CHAIN-137 | Gnosis Integration | CHAIN-101 | TODO | Chain 100, ~$400M TVL, Balancer DEX |
-| CHAIN-138 | Fantom Integration | CHAIN-101 | TODO | Chain 250, SpookySwap DEX |
+| CHAIN-138 | Fantom Integration | CHAIN-101 | DONE | Chain 250, SpookySwap/SpiritSwap/BeethovenX DEX |
 
 ### 7D: Tier 1B - Strategic Chains (9)
 
