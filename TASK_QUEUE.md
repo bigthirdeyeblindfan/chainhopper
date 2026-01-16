@@ -116,7 +116,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 
 | ID | Task | Dependencies | Status | Notes |
 |----|------|--------------|--------|-------|
-| CHAIN-100 | Add 37 chain IDs to types | F-001 | TODO | packages/types/src/chains.ts |
+| CHAIN-100 | Add 37 chain IDs to types | F-001 | DONE | packages/types/src/chains.ts |
 | CHAIN-101 | Add chain configs | CHAIN-100 | TODO | chains.ts: IDs, configs, wrapped tokens |
 | CHAIN-102 | Update viem mappings | CHAIN-101 | TODO | packages/adapters/src/evm/index.ts |
 | CHAIN-103 | Update aggregators.ts | CHAIN-101 | TODO | 1inch/ParaSwap support for new chains |
