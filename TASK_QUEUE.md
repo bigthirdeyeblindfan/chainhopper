@@ -26,6 +26,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 
 | Task ID | Agent | Checkout Time | Expires |
 |---------|-------|---------------|---------|
+| CHAIN-104 | claude-opus | 2026-01-16 17:20 | 2hrs |
 
 ---
 
@@ -119,7 +120,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | CHAIN-100 | Add 37 chain IDs to types | F-001 | DONE | packages/types/src/chains.ts |
 | CHAIN-101 | Add chain configs | CHAIN-100 | DONE | chains.ts: IDs, configs, wrapped tokens |
 | CHAIN-102 | Update viem mappings | CHAIN-101 | DONE | packages/adapters/src/evm/index.ts |
-| CHAIN-103 | Update aggregators.ts | CHAIN-101 | TODO | 1inch/ParaSwap support for new chains |
+| CHAIN-103 | Update aggregators.ts | CHAIN-101 | DONE | 1inch/ParaSwap support for new chains |
 | CHAIN-104 | Update adapter exports | CHAIN-103 | TODO | packages/adapters/src/index.ts |
 
 ### 7B: Originally Planned Chains (11)

@@ -12,9 +12,25 @@ const AGGREGATOR_APIS = {
 
 // Aggregator support per chain
 const AGGREGATOR_CHAIN_SUPPORT: Record<DexAggregator, EvmChainId[]> = {
-  '1inch': ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon', 'bsc', 'avalanche'],
-  paraswap: ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon', 'bsc', 'avalanche'],
-  '0x': ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon', 'bsc', 'avalanche'],
+  '1inch': [
+    // Original chains
+    'ethereum', 'base', 'arbitrum', 'optimism', 'polygon', 'bsc', 'avalanche',
+    // Phase 7 chains with 1inch support
+    'gnosis', 'fantom', 'linea', 'zksync', 'scroll', 'mantle', 'blast', 'mode',
+    'aurora' as EvmChainId, // Cast for future support
+  ],
+  paraswap: [
+    // Original chains
+    'ethereum', 'base', 'arbitrum', 'optimism', 'polygon', 'bsc', 'avalanche',
+    // Phase 7 chains with ParaSwap support
+    'gnosis', 'fantom',
+  ],
+  '0x': [
+    // Original chains
+    'ethereum', 'base', 'arbitrum', 'optimism', 'polygon', 'bsc', 'avalanche',
+    // Phase 7 chains with 0x support
+    'linea', 'scroll', 'blast', 'mantle',
+  ],
   oogabooga: ['berachain'],
   dragonswap: ['kaia'],
   klayswap: ['kaia'],
@@ -27,7 +43,21 @@ const AGGREGATOR_CHAIN_SUPPORT: Record<DexAggregator, EvmChainId[]> = {
 };
 
 // Chains with native DEX routing (bypass aggregators)
-const NATIVE_DEX_CHAINS: EvmChainId[] = ['sonic', 'kaia'];
+// These chains have specific DEX integrations in separate files
+const NATIVE_DEX_CHAINS: EvmChainId[] = [
+  'sonic',      // SwapX, Shadow DEX
+  'kaia',       // DragonSwap, KLAYswap
+  'ronin',      // Katana DEX
+  'apechain',   // Ape Portal / Camelot
+  'monad',      // Kuru Exchange
+  'soneium',    // Kyo Finance
+  'ink',        // Velodrome, Nado
+  'cronos',     // VVS Finance
+  'celo',       // Ubeswap
+  'metis',      // Netswap
+  'moonbeam',   // StellaSwap
+  'moonriver',  // Solarbeam
+];
 
 export interface AggregatorQuote {
   aggregator: DexAggregator;
