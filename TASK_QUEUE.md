@@ -26,9 +26,8 @@ If a checkout is >2 hours old with no commits, you may take it over.
 
 | Task ID | Agent | Checkout Time | Expires |
 |---------|-------|---------------|---------|
-| CHAIN-141 | claude-opus | 2026-01-16 14:35 | 2hrs |
-| CHAIN-143 | claude-opus-4.5 | 2026-01-16 14:40 | 2hrs |
-| CHAIN-144 | claude-opus | 2026-01-16 14:40 | 2hrs |
+| CHAIN-146 | claude-opus | 2026-01-16 14:45 | 2hrs |
+| CHAIN-147 | claude-opus | 2026-01-16 14:45 | 2hrs |
 
 ---
 
@@ -160,11 +159,11 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | ID | Task | Dependencies | Status | Notes |
 |----|------|--------------|--------|-------|
 | CHAIN-140 | Unichain Integration | CHAIN-101 | DONE | Chain 130, Uniswap V3/V4 DEX |
-| CHAIN-141 | Taiko Integration | CHAIN-101 | TODO | Chain 167000, Type-1 zkEVM |
+| CHAIN-141 | Taiko Integration | CHAIN-101 | DONE | Chain 167000, Henjin/Panko/DTX DEX |
 | CHAIN-142 | Metis Integration | CHAIN-101 | DONE | Chain 1088, Netswap/Tethys DEX |
-| CHAIN-143 | Zora Integration | CHAIN-101 | IN_PROGRESS | Chain 7777777, NFT/Creator |
-| CHAIN-144 | Fraxtal Integration | CHAIN-101 | TODO | Chain 252, frxETH gas |
-| CHAIN-145 | World Chain Integration | CHAIN-101 | TODO | Chain 480, Worldcoin |
+| CHAIN-143 | Zora Integration | CHAIN-101 | DONE | Chain 7777777, Uniswap V3 DEX |
+| CHAIN-144 | Fraxtal Integration | CHAIN-101 | DONE | Chain 252, Fraxswap/Ra Exchange DEX |
+| CHAIN-145 | World Chain Integration | CHAIN-101 | DONE | Chain 480, Uniswap V3/WorldSwap DEX |
 | CHAIN-146 | Celo Integration | CHAIN-101 | TODO | Chain 42220, Ubeswap DEX |
 | CHAIN-147 | Cronos Integration | CHAIN-101 | TODO | Chain 25, VVS Finance DEX |
 | CHAIN-148 | BOB Integration | CHAIN-101 | TODO | Chain 60808, BTC-ETH bridge |

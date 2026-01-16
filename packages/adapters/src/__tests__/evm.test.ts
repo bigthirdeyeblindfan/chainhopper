@@ -23,9 +23,9 @@ describe('EVM Chain Configuration', () => {
       expect(EVM_CHAIN_IDS.avalanche).toBe(43114);
     });
 
-    it('should have 45 supported EVM chains', () => {
-      // 10 original + 35 Phase 7 chains (36 new minus hyperliquid and starknet which are non-EVM)
-      expect(Object.keys(EVM_CHAIN_IDS)).toHaveLength(45);
+    it('should have 46 supported EVM chains', () => {
+      // 10 original + 36 Phase 7 chains (37 new minus starknet which is non-EVM)
+      expect(Object.keys(EVM_CHAIN_IDS)).toHaveLength(46);
     });
 
     it('should have correct chain IDs for Phase 7 chains', () => {

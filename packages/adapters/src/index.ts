@@ -64,12 +64,25 @@ export {
   getRoninChainId,
   getRoninPopularPairs,
   getKatanaFeeTiers,
+  // Mode-specific
+  MODE_CONTRACTS,
+  MODE_TOKENS,
+  getSwapModeV2Quote,
+  getSwapModeV3Quote,
+  getKimQuote,
+  getModeBestQuote,
+  buildModeSwapTransaction,
+  getModeDexes,
+  isModeChain,
+  getModeChainId,
+  getModePopularPairs,
   // Types
   type EvmChainId,
   type AggregatorQuote,
   type KaiaQuote,
   type MonadQuote,
   type RoninQuote,
+  type ModeQuote,
 } from './evm/index.js';
 
 // Sui adapter exports

@@ -976,6 +976,86 @@ export {
   type ModeQuote,
 } from './mode.js';
 
+// Export Fraxtal utilities
+export {
+  FRAXTAL_CHAIN_ID,
+  FRAXTAL_ROUTERS,
+  FRAXTAL_FACTORIES,
+  FRAXTAL_TOKENS,
+  FRAXSWAP_ROUTER_ABI,
+  RA_EXCHANGE_ROUTER_ABI,
+  getFraxswapQuote,
+  getRaExchangeQuote,
+  getFraxtalBestQuote,
+  buildFraxtalSwapTransaction,
+  getFraxtalDexes,
+  isFraxtalChain,
+  getFraxtalChainId,
+  getFraxtalPopularPairs,
+  type FraxtalQuote,
+} from './fraxtal.js';
+
+// Export Taiko utilities
+export {
+  TAIKO_CHAIN_ID,
+  TAIKO_ROUTERS,
+  TAIKO_FACTORIES,
+  TAIKO_TOKENS,
+  HENJIN_ROUTER_ABI,
+  PANKO_ROUTER_ABI,
+  getHenjinQuote,
+  getPankoQuote,
+  getDtxQuote,
+  getTaikoBestQuote,
+  buildTaikoSwapTransaction,
+  getTaikoDexes,
+  isTaikoChain,
+  getTaikoChainId,
+  getTaikoPopularPairs,
+  type TaikoQuote,
+} from './taiko.js';
+
+// Export Zora utilities
+export {
+  ZORA_CHAIN_ID,
+  ZORA_ROUTERS,
+  ZORA_FACTORIES,
+  ZORA_TOKENS,
+  ZORA_QUOTER_ABI,
+  ZORA_SWAP_ROUTER_ABI,
+  ZORA_FEE_TIERS,
+  getUniswapZoraQuote,
+  getUniversalRouterZoraQuote,
+  getZoraBestQuote,
+  buildZoraSwapTransaction,
+  getZoraDexes,
+  isZoraChain,
+  getZoraChainId,
+  getZoraPopularPairs,
+  getZoraFeeTiers,
+  type ZoraQuote,
+} from './zora.js';
+
+// Export World Chain utilities
+export {
+  WORLDCHAIN_CHAIN_ID,
+  WORLDCHAIN_ROUTERS,
+  WORLDCHAIN_FACTORIES,
+  WORLDCHAIN_TOKENS,
+  WORLDCHAIN_UNISWAP_V3_ROUTER_ABI,
+  WORLDSWAP_ROUTER_ABI,
+  getUniswapWorldChainQuote,
+  getWorldSwapQuote,
+  getWorldChainBestQuote,
+  buildWorldChainSwapTransaction,
+  getWorldChainDexes,
+  isWorldChain,
+  getWorldChainId,
+  getWorldChainFeeTiers,
+  getWorldChainPopularPairs,
+  type WorldChainQuote,
+} from './worldchain.js';
+
 // Factory function to create adapter for a chain
 export function createEvmAdapter(
   chainId: EvmChainId,
