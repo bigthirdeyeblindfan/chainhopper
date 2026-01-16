@@ -3,6 +3,7 @@ import { EVM_CHAIN_IDS, type EvmChainId } from './chains.js';
 import { getSonicBestQuote, isSonicChain } from './sonic.js';
 import { getKaiaBestQuote } from './kaia.js';
 import { getAbstractBestQuote, isAbstractChain } from './abstract.js';
+import { getZeroGBestQuote, isZeroGChain } from './zerog.js';
 
 // Aggregator API endpoints
 const AGGREGATOR_APIS = {
@@ -49,6 +50,7 @@ const NATIVE_DEX_CHAINS: EvmChainId[] = [
   'sonic',      // SwapX, Shadow DEX
   'kaia',       // DragonSwap, KLAYswap
   'abstract',   // AbstractSwap
+  'zerog',      // 0GSwap, Gravity DEX
   'ronin',      // Katana DEX
   'apechain',   // Ape Portal / Camelot
   'monad',      // Kuru Exchange
@@ -353,6 +355,24 @@ export async function getBestQuote(
         txData: abstractQuote.txData,
         txTo: abstractQuote.txTo,
         txValue: abstractQuote.txValue,
+      };
+    }
+    return null;
+  }
+
+  // Route 0G chain to native DEX (0GSwap, Gravity DEX)
+  if (isZeroGChain(request.chainId)) {
+    const zerogQuote = await getZeroGBestQuote(request);
+    if (zerogQuote) {
+      return {
+        aggregator: zerogQuote.aggregator,
+        amountOut: zerogQuote.amountOut,
+        estimatedGas: zerogQuote.estimatedGas,
+        priceImpact: zerogQuote.priceImpact,
+        route: zerogQuote.route,
+        txData: zerogQuote.txData,
+        txTo: zerogQuote.txTo,
+        txValue: zerogQuote.txValue,
       };
     }
     return null;

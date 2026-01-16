@@ -130,9 +130,9 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | CHAIN-111 | Abstract Integration | CHAIN-101 | DONE | Chain 2741, AbstractSwap DEX |
 | CHAIN-112 | Scroll Integration | CHAIN-101 | DONE | Chain 534352, SyncSwap/Ambient DEX |
 | CHAIN-113 | Soneium Integration | CHAIN-101 | TODO | Chain 1868, Kyo Finance DEX |
-| CHAIN-114 | XLayer Integration | CHAIN-101 | TODO | Chain 196, OKB gas token |
+| CHAIN-114 | XLayer Integration | CHAIN-101 | DONE | Chain 196, OKB gas token, XSwap DEX |
 | CHAIN-115 | Ink Integration | CHAIN-101 | TODO | Chain 57073, Velodrome/Nado DEX |
-| CHAIN-116 | 0G Integration | CHAIN-101 | TODO | AI-focused L1 |
+| CHAIN-116 | 0G Integration | CHAIN-101 | DONE | Chain 16600, 0GSwap/Gravity DEX |
 | CHAIN-117 | Astar Integration | CHAIN-101 | TODO | Chain 592, ASTR gas |
 | CHAIN-118 | ApeChain Integration | CHAIN-101 | TODO | Chain 33139, Ape Portal DEX |
 | CHAIN-119 | Ronin Integration | CHAIN-101 | TODO | Chain 2020, Katana DEX |

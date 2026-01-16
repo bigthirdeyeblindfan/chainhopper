@@ -618,6 +618,42 @@ export {
   type ScrollQuote,
 } from './scroll.js';
 
+// Export X Layer utilities
+export {
+  XLAYER_CHAIN_ID,
+  XLAYER_ROUTERS,
+  XLAYER_FACTORIES,
+  XLAYER_TOKENS,
+  XSWAP_ROUTER_ABI,
+  getXSwapQuote,
+  getXLayerDirectQuote,
+  getXLayerBestQuote,
+  buildXLayerSwapTransaction,
+  getXLayerDexes,
+  isXLayerChain,
+  getXLayerChainId,
+  getXLayerPopularPairs,
+  type XLayerQuote,
+} from './xlayer.js';
+
+// Export 0G utilities
+export {
+  ZEROG_CHAIN_ID,
+  ZEROG_ROUTERS,
+  ZEROG_FACTORIES,
+  ZEROG_TOKENS,
+  ZEROGSWAP_ROUTER_ABI,
+  getZeroGSwapQuote,
+  getGravityDexQuote,
+  getZeroGBestQuote,
+  buildZeroGSwapTransaction,
+  getZeroGDexes,
+  isZeroGChain,
+  getZeroGChainId,
+  getZeroGPopularPairs,
+  type ZeroGQuote,
+} from './zerog.js';
+
 // Factory function to create adapter for a chain
 export function createEvmAdapter(
   chainId: EvmChainId,
