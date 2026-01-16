@@ -96,7 +96,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 
 ---
 
-## Phase 6: Chain Expansion
+## Phase 6: Chain Expansion (Complete)
 
 | ID | Task | Dependencies | Status | Notes |
 |----|------|--------------|--------|-------|
@@ -105,6 +105,88 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | CHAIN-003 | Sui Full Integration | F-004 | DONE | SuiChainAdapter + Cetus/Turbos DEX + tests |
 | CHAIN-004 | Eclipse/SVM Integration | F-004 | DONE | EclipseAdapter + Jupiter + SVM types + tests |
 | CHAIN-005 | Kaia Integration | F-006 | DONE | DragonSwap + KLAYswap DEXs, token addresses |
+
+---
+
+## Phase 7: Massive Chain Expansion (37 New Chains)
+
+**Target: 47 total chains | Est. Deploy Cost: $270-615**
+
+### 7A: Type & Config Updates
+
+| ID | Task | Dependencies | Status | Notes |
+|----|------|--------------|--------|-------|
+| CHAIN-100 | Add 37 chain IDs to types | F-001 | TODO | packages/types/src/chains.ts |
+| CHAIN-101 | Add chain configs | CHAIN-100 | TODO | chains.ts: IDs, configs, wrapped tokens |
+| CHAIN-102 | Update viem mappings | CHAIN-101 | TODO | packages/adapters/src/evm/index.ts |
+| CHAIN-103 | Update aggregators.ts | CHAIN-101 | TODO | 1inch/ParaSwap support for new chains |
+| CHAIN-104 | Update adapter exports | CHAIN-103 | TODO | packages/adapters/src/index.ts |
+
+### 7B: Originally Planned Chains (11)
+
+| ID | Task | Dependencies | Status | Notes |
+|----|------|--------------|--------|-------|
+| CHAIN-110 | Monad Integration | CHAIN-101 | TODO | Chain 143, Kuru Exchange DEX |
+| CHAIN-111 | Abstract Integration | CHAIN-101 | TODO | Chain 2741, L2 zkSync |
+| CHAIN-112 | Scroll Integration | CHAIN-101 | TODO | Chain 534352, zkEVM |
+| CHAIN-113 | Soneium Integration | CHAIN-101 | TODO | Chain 1868, Kyo Finance DEX |
+| CHAIN-114 | XLayer Integration | CHAIN-101 | TODO | Chain 196, OKB gas token |
+| CHAIN-115 | Ink Integration | CHAIN-101 | TODO | Chain 57073, Velodrome/Nado DEX |
+| CHAIN-116 | 0G Integration | CHAIN-101 | TODO | AI-focused L1 |
+| CHAIN-117 | Astar Integration | CHAIN-101 | TODO | Chain 592, ASTR gas |
+| CHAIN-118 | ApeChain Integration | CHAIN-101 | TODO | Chain 33139, Ape Portal DEX |
+| CHAIN-119 | Ronin Integration | CHAIN-101 | TODO | Chain 2020, Katana DEX |
+| CHAIN-120 | Stable Integration | CHAIN-101 | TODO | Chain 988, USDT gas |
+
+### 7C: Tier 1A - High TVL Chains (9)
+
+| ID | Task | Dependencies | Status | Notes |
+|----|------|--------------|--------|-------|
+| CHAIN-130 | Linea Integration | CHAIN-101 | TODO | Chain 59144, ~$963M TVL, Lynex DEX |
+| CHAIN-131 | zkSync Era Integration | CHAIN-101 | TODO | Chain 324, ~$569M TVL, SyncSwap DEX |
+| CHAIN-132 | Blast Integration | CHAIN-101 | TODO | Chain 238, Thruster DEX |
+| CHAIN-133 | Mantle Integration | CHAIN-101 | TODO | Chain 5000, ~$1B TVL, Merchant Moe DEX |
+| CHAIN-134 | Manta Pacific Integration | CHAIN-101 | TODO | Chain 169, OP Stack |
+| CHAIN-135 | Mode Integration | CHAIN-101 | TODO | Chain 34443, Velodrome DEX |
+| CHAIN-136 | Hyperliquid Integration | CHAIN-101 | TODO | Chain 999, Native Perps DEX |
+| CHAIN-137 | Gnosis Integration | CHAIN-101 | TODO | Chain 100, ~$400M TVL, Balancer DEX |
+| CHAIN-138 | Fantom Integration | CHAIN-101 | TODO | Chain 250, SpookySwap DEX |
+
+### 7D: Tier 1B - Strategic Chains (9)
+
+| ID | Task | Dependencies | Status | Notes |
+|----|------|--------------|--------|-------|
+| CHAIN-140 | Unichain Integration | CHAIN-101 | TODO | Chain 130, Uniswap's L2 |
+| CHAIN-141 | Taiko Integration | CHAIN-101 | TODO | Chain 167000, Type-1 zkEVM |
+| CHAIN-142 | Metis Integration | CHAIN-101 | TODO | Chain 1088, Netswap DEX |
+| CHAIN-143 | Zora Integration | CHAIN-101 | TODO | Chain 7777777, NFT/Creator |
+| CHAIN-144 | Fraxtal Integration | CHAIN-101 | TODO | Chain 252, frxETH gas |
+| CHAIN-145 | World Chain Integration | CHAIN-101 | TODO | Chain 480, Worldcoin |
+| CHAIN-146 | Celo Integration | CHAIN-101 | TODO | Chain 42220, Ubeswap DEX |
+| CHAIN-147 | Cronos Integration | CHAIN-101 | TODO | Chain 25, VVS Finance DEX |
+| CHAIN-148 | BOB Integration | CHAIN-101 | TODO | Chain 60808, BTC-ETH bridge |
+
+### 7E: Tier 1C - Emerging Chains (8)
+
+| ID | Task | Dependencies | Status | Notes |
+|----|------|--------------|--------|-------|
+| CHAIN-150 | Cyber Integration | CHAIN-101 | TODO | Chain 7560, Social/Creator |
+| CHAIN-151 | Lisk Integration | CHAIN-101 | TODO | Chain 1135, Enterprise |
+| CHAIN-152 | Mint Integration | CHAIN-101 | TODO | Chain 185, NFT focused |
+| CHAIN-153 | Redstone Integration | CHAIN-101 | TODO | Chain 690, Gaming (MUD) |
+| CHAIN-154 | Derive Integration | CHAIN-101 | TODO | Chain 957, Derive Protocol DEX |
+| CHAIN-155 | Moonbeam Integration | CHAIN-101 | TODO | Chain 1284, StellaSwap DEX |
+| CHAIN-156 | Moonriver Integration | CHAIN-101 | TODO | Chain 1285, Solarbeam DEX |
+| CHAIN-157 | Starknet Integration | F-004 | TODO | Non-EVM (Cairo), Ekubo/Paradex DEX |
+
+### 7F: Testing & Deployment
+
+| ID | Task | Dependencies | Status | Notes |
+|----|------|--------------|--------|-------|
+| CHAIN-190 | Create tests for all 37 chains | CHAIN-1* | TODO | Unit + integration tests |
+| CHAIN-191 | Update foundry.toml RPCs | CHAIN-1* | TODO | RPC endpoints for all chains |
+| CHAIN-192 | Run full test suite | CHAIN-190 | TODO | Verify all adapters |
+| CHAIN-193 | Deploy contracts to 37 chains | CHAIN-192 | TODO | Est. $270-615 total |
 
 ---
 
