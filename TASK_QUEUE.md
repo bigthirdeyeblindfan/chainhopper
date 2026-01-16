@@ -26,8 +26,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 
 | Task ID | Agent | Checkout Time | Expires |
 |---------|-------|---------------|---------|
-| CHAIN-113 | claude-opus | 2026-01-16 14:00 | 2hrs |
-| CHAIN-115 | claude-opus-4.5 | 2026-01-16 14:05 | 2hrs |
+| CHAIN-130 | claude-opus | 2026-01-16 14:10 | 2hrs |
 
 ---
 
@@ -131,14 +130,14 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | CHAIN-110 | Monad Integration | CHAIN-101 | DONE | Chain 143, Kuru Exchange DEX |
 | CHAIN-111 | Abstract Integration | CHAIN-101 | DONE | Chain 2741, AbstractSwap DEX |
 | CHAIN-112 | Scroll Integration | CHAIN-101 | DONE | Chain 534352, SyncSwap/Ambient DEX |
-| CHAIN-113 | Soneium Integration | CHAIN-101 | TODO | Chain 1868, Kyo Finance DEX |
+| CHAIN-113 | Soneium Integration | CHAIN-101 | DONE | Chain 1868, Kyo Finance DEX |
 | CHAIN-114 | XLayer Integration | CHAIN-101 | DONE | Chain 196, OKB gas token, XSwap DEX |
-| CHAIN-115 | Ink Integration | CHAIN-101 | IN_PROGRESS | Chain 57073, Velodrome/Nado DEX |
+| CHAIN-115 | Ink Integration | CHAIN-101 | DONE | Chain 57073, Velodrome/Nado DEX |
 | CHAIN-116 | 0G Integration | CHAIN-101 | DONE | Chain 16600, 0GSwap/Gravity DEX |
 | CHAIN-117 | Astar Integration | CHAIN-101 | DONE | Chain 592, ArthSwap/Sirius DEX |
 | CHAIN-118 | ApeChain Integration | CHAIN-101 | DONE | Chain 33139, Ape Portal/Camelot DEX |
 | CHAIN-119 | Ronin Integration | CHAIN-101 | TODO | Chain 2020, Katana DEX |
-| CHAIN-120 | Stable Integration | CHAIN-101 | TODO | Chain 988, USDT gas |
+| CHAIN-120 | Stable Integration | CHAIN-101 | DONE | Chain 988, USDT native gas, StableSwap DEX |
 
 ### 7C: Tier 1A - High TVL Chains (9)
 

@@ -51,11 +51,25 @@ export {
   isMonadChain,
   getMonadChainId,
   getMonadPopularPairs,
+  // Ronin-specific
+  RONIN_CONTRACTS,
+  RONIN_TOKENS,
+  getKatanaV3Quote,
+  getKatanaV2Quote,
+  getKatanaAggregateQuote,
+  getRoninBestQuote,
+  buildRoninSwapTransaction,
+  getRoninDexes,
+  isRoninChain,
+  getRoninChainId,
+  getRoninPopularPairs,
+  getKatanaFeeTiers,
   // Types
   type EvmChainId,
   type AggregatorQuote,
   type KaiaQuote,
   type MonadQuote,
+  type RoninQuote,
 } from './evm/index.js';
 
 // Sui adapter exports

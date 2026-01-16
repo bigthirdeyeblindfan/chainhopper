@@ -5,6 +5,7 @@ import { getKaiaBestQuote } from './kaia.js';
 import { getAbstractBestQuote, isAbstractChain } from './abstract.js';
 import { getZeroGBestQuote, isZeroGChain } from './zerog.js';
 import { getAstarBestQuote, isAstarChain } from './astar.js';
+import { getStableBestQuote, isStableChain } from './stable.js';
 
 // Aggregator API endpoints
 const AGGREGATOR_APIS = {
@@ -53,6 +54,7 @@ const NATIVE_DEX_CHAINS: EvmChainId[] = [
   'abstract',   // AbstractSwap
   'zerog',      // 0GSwap, Gravity DEX
   'astar',      // ArthSwap, SiriusFinance
+  'stable',     // StableSwap, StableDEX (USDT native gas)
   'ronin',      // Katana DEX
   'apechain',   // Ape Portal / Camelot
   'monad',      // Kuru Exchange
@@ -393,6 +395,24 @@ export async function getBestQuote(
         txData: astarQuote.txData,
         txTo: astarQuote.txTo,
         txValue: astarQuote.txValue,
+      };
+    }
+    return null;
+  }
+
+  // Route Stable chain to native DEX (StableSwap, StableDEX)
+  if (isStableChain(request.chainId)) {
+    const stableQuote = await getStableBestQuote(request);
+    if (stableQuote) {
+      return {
+        aggregator: stableQuote.aggregator,
+        amountOut: stableQuote.amountOut,
+        estimatedGas: stableQuote.estimatedGas,
+        priceImpact: stableQuote.priceImpact,
+        route: stableQuote.route,
+        txData: stableQuote.txData,
+        txTo: stableQuote.txTo,
+        txValue: stableQuote.txValue,
       };
     }
     return null;

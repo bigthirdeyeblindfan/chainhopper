@@ -618,6 +618,25 @@ export {
   type ScrollQuote,
 } from './scroll.js';
 
+// Export Soneium utilities
+export {
+  SONEIUM_CHAIN_ID,
+  SONEIUM_ROUTERS,
+  SONEIUM_FACTORIES,
+  SONEIUM_TOKENS,
+  KYO_ROUTER_ABI,
+  KYO_QUOTER_ABI,
+  getKyoFinanceQuote,
+  getKyoOnChainQuote,
+  getSoneiumBestQuote,
+  buildSoneiumSwapTransaction,
+  getSoneiumDexes,
+  isSoneiumChain,
+  getSoneiumChainId,
+  getSoneiumPopularPairs,
+  type SoneiumQuote,
+} from './soneium.js';
+
 // Export X Layer utilities
 export {
   XLAYER_CHAIN_ID,
@@ -708,6 +727,42 @@ export {
   getInkPopularPairs,
   type InkQuote,
 } from './ink.js';
+
+// Export Ronin utilities
+export {
+  RONIN_CONTRACTS,
+  RONIN_TOKENS,
+  getKatanaV3Quote,
+  getKatanaV2Quote,
+  getKatanaAggregateQuote,
+  getRoninBestQuote,
+  buildRoninSwapTransaction,
+  getRoninDexes,
+  isRoninChain,
+  getRoninChainId,
+  getRoninPopularPairs,
+  getKatanaFeeTiers,
+  type RoninQuote,
+} from './ronin.js';
+
+// Export Stable utilities
+export {
+  STABLE_CHAIN_ID,
+  STABLE_ROUTERS,
+  STABLE_FACTORIES,
+  STABLE_TOKENS,
+  STABLESWAP_ROUTER_ABI,
+  getStableSwapQuote,
+  getStableDexQuote,
+  getStableBestQuote,
+  buildStableSwapTransaction,
+  getStableDexes,
+  isStableChain,
+  getStableChainId,
+  getStablePopularPairs,
+  getStableNativeDecimals,
+  type StableQuote,
+} from './stable.js';
 
 // Factory function to create adapter for a chain
 export function createEvmAdapter(
