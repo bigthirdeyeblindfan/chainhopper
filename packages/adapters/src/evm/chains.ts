@@ -2,6 +2,7 @@ import type { ChainConfig, ChainId } from '@chainhopper/types';
 
 // EVM Chain IDs (numeric)
 export const EVM_CHAIN_IDS = {
+  // Original chains
   ethereum: 1,
   base: 8453,
   arbitrum: 42161,
@@ -12,6 +13,45 @@ export const EVM_CHAIN_IDS = {
   sonic: 146,
   kaia: 8217,
   berachain: 80094,
+  // Phase 7B: Originally Planned (11 chains)
+  monad: 143,
+  abstract: 2741,
+  scroll: 534352,
+  soneium: 1868,
+  xlayer: 196,
+  ink: 57073,
+  zerog: 16600,
+  astar: 592,
+  apechain: 33139,
+  ronin: 2020,
+  stable: 988,
+  // Phase 7C: Tier 1A - High TVL (8 chains, hyperliquid is non-EVM)
+  linea: 59144,
+  zksync: 324,
+  blast: 81457,
+  mantle: 5000,
+  manta: 169,
+  mode: 34443,
+  gnosis: 100,
+  fantom: 250,
+  // Phase 7D: Tier 1B - Strategic (9 chains)
+  unichain: 130,
+  taiko: 167000,
+  metis: 1088,
+  zora: 7777777,
+  fraxtal: 252,
+  worldchain: 480,
+  celo: 42220,
+  cronos: 25,
+  bob: 60808,
+  // Phase 7E: Tier 1C - Emerging (7 EVM chains, starknet is non-EVM)
+  cyber: 7560,
+  lisk: 1135,
+  mint: 185,
+  redstone: 690,
+  derive: 957,
+  moonbeam: 1284,
+  moonriver: 1285,
 } as const;
 
 export type EvmChainId = keyof typeof EVM_CHAIN_IDS;

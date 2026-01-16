@@ -34,6 +34,25 @@ import {
   polygon,
   bsc,
   avalanche,
+  // Phase 7 chains with native viem support
+  linea,
+  zkSync,
+  blast,
+  mantle,
+  manta,
+  mode,
+  gnosis,
+  fantom,
+  scroll,
+  celo,
+  cronos,
+  moonbeam,
+  moonriver,
+  metis,
+  zora,
+  fraxtal,
+  taiko,
+  bob,
 } from 'viem/chains';
 import {
   EVM_CHAIN_IDS,
@@ -47,6 +66,7 @@ import { getBestQuote, type AggregatorQuote } from './aggregators.js';
 
 // Map our chain IDs to viem chains
 const VIEM_CHAINS: Partial<Record<EvmChainId, Chain>> = {
+  // Original chains
   ethereum: mainnet,
   base: base,
   arbitrum: arbitrum,
@@ -54,6 +74,29 @@ const VIEM_CHAINS: Partial<Record<EvmChainId, Chain>> = {
   polygon: polygon,
   bsc: bsc,
   avalanche: avalanche,
+  // Phase 7 chains with native viem support
+  linea: linea,
+  zksync: zkSync,
+  blast: blast,
+  mantle: mantle,
+  manta: manta,
+  mode: mode,
+  gnosis: gnosis,
+  fantom: fantom,
+  scroll: scroll,
+  celo: celo,
+  cronos: cronos,
+  moonbeam: moonbeam,
+  moonriver: moonriver,
+  metis: metis,
+  zora: zora,
+  fraxtal: fraxtal,
+  taiko: taiko,
+  bob: bob,
+  // Chains without native viem support use createCustomChain():
+  // monad, abstract, soneium, xlayer, ink, zerog, astar, apechain,
+  // ronin, stable, unichain, worldchain, cyber, lisk, mint,
+  // redstone, derive, hyperliquid, sonic, kaia, berachain
 };
 
 // Create custom chains for unsupported networks
