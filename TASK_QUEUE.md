@@ -26,6 +26,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 
 | Task ID | Agent | Checkout Time | Expires |
 |---------|-------|---------------|---------|
+| CHAIN-157 | claude-opus-4.5 | 2026-01-16 18:05 | 2hrs |
 
 ---
 
@@ -177,7 +178,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | CHAIN-154 | Derive Integration | CHAIN-101 | DONE | Chain 957, Derive Protocol/Velodrome DEX |
 | CHAIN-155 | Moonbeam Integration | CHAIN-101 | DONE | Chain 1284, StellaSwap/BeamSwap DEX |
 | CHAIN-156 | Moonriver Integration | CHAIN-101 | DONE | Chain 1285, Solarbeam/Huckleberry/Zenlink DEX |
-| CHAIN-157 | Starknet Integration | F-004 | TODO | Non-EVM (Cairo), Ekubo/Paradex DEX |
+| CHAIN-157 | Starknet Integration | F-004 | IN_PROGRESS | Non-EVM (Cairo), Ekubo/Paradex DEX |
 
 ---
 
@@ -197,7 +198,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 
 | ID | Task | Dependencies | Status | Notes |
 |----|------|--------------|--------|-------|
-| SOL-010 | Implement Jupiter DEX integration | SOL-003 | TODO | Jupiter v6 API: quote, swap, tokens endpoints |
+| SOL-010 | Implement Jupiter DEX integration | SOL-003 | DONE | Jupiter v6 API: quote, swap, tokens, price, instructions |
 | SOL-011 | Implement Raydium DEX integration | SOL-003 | TODO | Raydium SDK: AMM pools, CLMM concentrated liquidity |
 | SOL-012 | Implement Orca DEX integration | SOL-003 | TODO | Orca Whirlpools CLMM, legacy pools |
 | SOL-013 | Create DEX aggregator (best quote) | SOL-010,SOL-011,SOL-012 | TODO | Compare quotes, return best route |

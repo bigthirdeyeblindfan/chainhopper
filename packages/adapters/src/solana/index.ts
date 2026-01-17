@@ -56,6 +56,7 @@ import {
 // Re-export submodules
 export * from './tokens.js';
 export * from './dex.js';
+export * from './jupiter.js';
 
 // Solana native token
 const SOLANA_NATIVE: Token = {
