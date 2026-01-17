@@ -21,8 +21,8 @@ import type {
   SvmTokenAccount,
   SvmSimulationResult,
   SolanaConfig,
-  DEFAULT_SOLANA_CONFIG,
 } from '@chainhopper/types';
+import { DEFAULT_SOLANA_CONFIG } from '@chainhopper/types';
 import {
   Connection,
   PublicKey,
@@ -57,6 +57,9 @@ import {
 export * from './tokens.js';
 export * from './dex.js';
 export * from './jupiter.js';
+export * from './raydium.js';
+export * from './orca.js';
+export * from './aggregator.js';
 
 // Solana native token
 const SOLANA_NATIVE: Token = {
