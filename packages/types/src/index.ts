@@ -21,3 +21,6 @@ export * from './adapters.js';
 
 // API types
 export * from './api.js';
+
+// Solana types
+export * from './solana.js';

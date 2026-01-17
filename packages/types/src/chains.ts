@@ -57,7 +57,9 @@ export type ChainId =
   | 'derive'       // Chain ID: 957
   | 'moonbeam'     // Chain ID: 1284
   | 'moonriver'    // Chain ID: 1285
-  | 'starknet';    // Non-EVM (Cairo)
+  | 'starknet'     // Non-EVM (Cairo)
+  // Solana Virtual Machine
+  | 'solana';      // Solana Mainnet
 
 export type ChainType = 'evm' | 'ton' | 'sui' | 'cosmos' | 'svm' | 'starknet';
 

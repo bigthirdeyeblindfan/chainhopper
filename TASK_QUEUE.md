@@ -26,7 +26,6 @@ If a checkout is >2 hours old with no commits, you may take it over.
 
 | Task ID | Agent | Checkout Time | Expires |
 |---------|-------|---------------|---------|
-| CHAIN-148 | claude-opus-4.5 | 2026-01-16 17:52 | 2hrs |
 
 ---
 
@@ -165,7 +164,7 @@ If a checkout is >2 hours old with no commits, you may take it over.
 | CHAIN-145 | World Chain Integration | CHAIN-101 | DONE | Chain 480, Uniswap V3/WorldSwap DEX |
 | CHAIN-146 | Celo Integration | CHAIN-101 | DONE | Chain 42220, Ubeswap V2/V3 DEX |
 | CHAIN-147 | Cronos Integration | CHAIN-101 | DONE | Chain 25, VVS/MM Finance/Crodex DEX |
-| CHAIN-148 | BOB Integration | CHAIN-101 | IN_PROGRESS | Chain 60808, BTC-ETH bridge |
+| CHAIN-148 | BOB Integration | CHAIN-101 | DONE | Chain 60808, IceCreamSwap/Oku DEX |
 
 ### 7E: Tier 1C - Emerging Chains (8)
 
@@ -173,12 +172,63 @@ If a checkout is >2 hours old with no commits, you may take it over.
 |----|------|--------------|--------|-------|
 | CHAIN-150 | Cyber Integration | CHAIN-101 | DONE | Chain 7560, CyberSwap/Velodrome DEX |
 | CHAIN-151 | Lisk Integration | CHAIN-101 | DONE | Chain 1135, Velodrome/Oku DEX |
-| CHAIN-152 | Mint Integration | CHAIN-101 | TODO | Chain 185, NFT focused |
+| CHAIN-152 | Mint Integration | CHAIN-101 | DONE | Chain 185, MintSwap/Velodrome DEX |
 | CHAIN-153 | Redstone Integration | CHAIN-101 | DONE | Chain 690, GarnetSwap/MUD Swap DEX |
 | CHAIN-154 | Derive Integration | CHAIN-101 | DONE | Chain 957, Derive Protocol/Velodrome DEX |
 | CHAIN-155 | Moonbeam Integration | CHAIN-101 | DONE | Chain 1284, StellaSwap/BeamSwap DEX |
 | CHAIN-156 | Moonriver Integration | CHAIN-101 | DONE | Chain 1285, Solarbeam/Huckleberry/Zenlink DEX |
 | CHAIN-157 | Starknet Integration | F-004 | TODO | Non-EVM (Cairo), Ekubo/Paradex DEX |
+
+---
+
+## Phase 8: Solana Mainnet Integration
+
+**Target: Native Solana support with Jupiter, Raydium, Orca DEXs**
+
+### 8A: Types & Infrastructure
+
+| ID | Task | Dependencies | Status | Notes |
+|----|------|--------------|--------|-------|
+| SOL-001 | Add Solana types to @chainhopper/types | F-001 | DONE | 'solana' ChainId, raydium/orca DexAggregator types |
+| SOL-002 | Create Solana adapter directory structure | SOL-001 | DONE | packages/adapters/src/solana/{index,dex,tokens}.ts |
+| SOL-003 | Add Solana dependencies to package.json | SOL-002 | DONE | @solana/web3.js, @solana/spl-token, @raydium-io/raydium-sdk-v2, @jup-ag/api, @orca-so/whirlpools-sdk |
+
+### 8B: DEX Integrations
+
+| ID | Task | Dependencies | Status | Notes |
+|----|------|--------------|--------|-------|
+| SOL-010 | Implement Jupiter DEX integration | SOL-003 | TODO | Jupiter v6 API: quote, swap, tokens endpoints |
+| SOL-011 | Implement Raydium DEX integration | SOL-003 | TODO | Raydium SDK: AMM pools, CLMM concentrated liquidity |
+| SOL-012 | Implement Orca DEX integration | SOL-003 | TODO | Orca Whirlpools CLMM, legacy pools |
+| SOL-013 | Create DEX aggregator (best quote) | SOL-010,SOL-011,SOL-012 | TODO | Compare quotes, return best route |
+
+### 8C: Core Adapter Implementation
+
+| ID | Task | Dependencies | Status | Notes |
+|----|------|--------------|--------|-------|
+| SOL-020 | Create SolanaChainAdapter class | SOL-010 | TODO | Implements SvmAdapter, SOL native (9 decimals) |
+| SOL-021 | Implement token methods | SOL-020 | TODO | getToken, getTokenBalance, getTokenBalances, getTokenPrice |
+| SOL-022 | Implement ATA management | SOL-020 | TODO | Associated Token Account creation, SPL + Token-2022 |
+| SOL-023 | Implement transaction building | SOL-020 | TODO | Versioned tx, priority fees, compute budget, Jito tips |
+| SOL-024 | Implement quote & swap flow | SOL-013,SOL-020 | TODO | getQuote, buildSwapTransaction, submitTransaction |
+| SOL-025 | Add RPC failover mechanism | SOL-020 | TODO | Helius, QuickNode, Triton RPC rotation |
+
+### 8D: Token Data & Exports
+
+| ID | Task | Dependencies | Status | Notes |
+|----|------|--------------|--------|-------|
+| SOL-030 | Add popular token addresses | SOL-020 | TODO | SOL, USDC, USDT, JUP, RAY, ORCA, BONK, WIF, JTO, PYTH |
+| SOL-031 | Integrate Jupiter token list API | SOL-020 | TODO | Verified tokens, metadata, logos |
+| SOL-032 | Add Solana exports to main index | SOL-024 | TODO | packages/adapters/src/index.ts exports |
+
+### 8E: Testing & Documentation
+
+| ID | Task | Dependencies | Status | Notes |
+|----|------|--------------|--------|-------|
+| SOL-040 | Create Solana adapter unit tests | SOL-024 | TODO | Token, balance, quote, swap tests |
+| SOL-041 | Create DEX integration tests | SOL-013 | TODO | Jupiter, Raydium, Orca quote tests |
+| SOL-042 | Add Solana to test suite | SOL-040,SOL-041 | TODO | packages/adapters/tests/solana/ |
+| SOL-043 | Documentation & examples | SOL-042 | TODO | SDK docs, swap examples, token lookup |
 
 ### 7F: Testing & Deployment
 
@@ -266,6 +316,30 @@ Profit-share: 15/10/5% tiers
 ```
 packages/contracts/ton/fee-collector.fc
 FunC fee collection
+```
+
+### SOL-*: Solana Mainnet Integration
+```
+packages/adapters/src/solana/
+├── index.ts          # SolanaChainAdapter class
+├── tokens.ts         # Token addresses (SOL, USDC, JUP, BONK, etc.)
+└── dex/
+    ├── index.ts      # DEX exports, getBestQuote()
+    ├── jupiter.ts    # Jupiter v6 API integration
+    ├── raydium.ts    # Raydium AMM/CLMM pools
+    └── orca.ts       # Orca Whirlpools
+
+SDK: @solana/web3.js, @solana/spl-token
+DEXs: Jupiter (aggregator), Raydium, Orca
+Native: SOL (9 decimals)
+RPC: Helius, QuickNode, Triton (mainnet-beta)
+
+Key differences from Eclipse (svm/):
+- Native token is SOL, not ETH
+- Uses Solana mainnet-beta RPC endpoints
+- Full Jupiter v6 API support (Eclipse has limited support)
+- Raydium/Orca direct integrations for better routing
+- Priority fees + Jito MEV protection
 ```
 
 ---
